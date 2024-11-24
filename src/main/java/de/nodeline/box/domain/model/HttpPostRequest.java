@@ -1,13 +1,17 @@
 package de.nodeline.box.domain.model;
 
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("HTTP_POST") // Optional if using a single table for inheritance
-public class HttpPostRequest extends DataSink {
-    private String url;
+public class HttpPostRequest extends HttpRequest implements DataSinkInterface {
     
+    public HttpPostRequest() {
+        super();
+    }
 
-    // Getters, Setters
+    @Override
+    public void placeData() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'placeData'");
+    }
 }

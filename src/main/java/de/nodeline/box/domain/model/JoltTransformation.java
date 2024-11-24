@@ -1,17 +1,13 @@
 package de.nodeline.box.domain.model;
 
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
 
 @Entity
-@DiscriminatorValue("JOLT") // Optional if using a single table for inheritance
+@AllArgsConstructor
 public class JoltTransformation extends Transformation {
-    private String joltSpecification;
 
-    public JoltTransformation(Long id, String joltSpecification) {
-        super(id);
-        this.joltSpecification = joltSpecification;
-    }
+    private String joltSpecification;
 
     // Getters, Setters
 }

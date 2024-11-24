@@ -1,14 +1,19 @@
 package de.nodeline.box.domain.model;
 
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("HTTP_GET") // Optional if using a single table for inheritance
-public class HttpGetRequest extends DataSource {
-    private String url;
+public class HttpGetRequest extends HttpRequest implements DataSourceInterface {
 
+    public HttpGetRequest() {
+        super();
+    }
 
+    @Override
+    public Record getData() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getData'");
+    }
 
     // Getters, Setters
 }

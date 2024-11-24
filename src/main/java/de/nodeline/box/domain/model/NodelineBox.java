@@ -1,6 +1,7 @@
 package de.nodeline.box.domain.model;
 
-import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -10,24 +11,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
 
 @Entity
+@AllArgsConstructor
 public class NodelineBox {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @OneToMany(mappedBy = "nodelineBox", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Pipeline> pipelines;
+    private Set<Pipeline> pipelines;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    private NodelineUser user;
     
-    // Constructors, Getters, Setters
-    public NodelineBox(Long id, User user) {
-        this.id = id;
-        this.user = user;
+    public NodelineBox() {
+        this.id = UUID.randomUUID();
     }
 
     public void addPipeline(Pipeline pipeline) {

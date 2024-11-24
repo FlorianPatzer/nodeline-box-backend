@@ -1,28 +1,23 @@
 package de.nodeline.box.domain.model;
 
-import java.util.Set;
 import java.util.UUID;
 
-import jakarta.persistence.CascadeType;
+import de.nodeline.box.domain.model.record.MailAddress;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 
 @Entity
 @AllArgsConstructor
-public class Device {
+public class NodelineUser {
     @Id
     private UUID id;
+    private String name;    
+    private MailAddress mailAddress;
 
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Endpoint> endpoints;
-
-    public Device() {
+    public NodelineUser() {
         this.id = UUID.randomUUID();
     }
-
-    // Getters, Setters
 }
