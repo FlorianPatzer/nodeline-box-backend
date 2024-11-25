@@ -5,8 +5,6 @@ import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -14,6 +12,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
@@ -31,6 +31,8 @@ public class Pipeline {
         joinColumns = @JoinColumn(name = "data_source_id"),
         inverseJoinColumns = @JoinColumn(name = "pipeline_id")
     )
+    @Setter
+    @Getter
     private Set<DataSource> dataSources;
 
     @ManyToMany
@@ -39,10 +41,19 @@ public class Pipeline {
         joinColumns = @JoinColumn(name = "data_sink_id"),
         inverseJoinColumns = @JoinColumn(name = "pipeline_id")
     )
+    @Setter
+    @Getter
     private Set<DataSink> dataSinks;
 
     @OneToMany(mappedBy = "pipeline", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Transformation> transformations;
+    @Setter
+    @Getter
+    private Set<Linkable> linkables;
+    
+    @OneToMany(mappedBy = "pipeline", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    @Getter
+    private Set<Link> links;
 
     public Pipeline() {
         this.id = UUID.randomUUID();

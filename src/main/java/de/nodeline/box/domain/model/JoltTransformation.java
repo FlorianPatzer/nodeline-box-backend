@@ -9,5 +9,8 @@ public class JoltTransformation extends Transformation {
 
     private String joltSpecification;
 
+    public JoltTransformation() {
+        super();
+    }
     // Getters, Setters
 }

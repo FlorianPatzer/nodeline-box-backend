@@ -4,8 +4,6 @@ import java.util.UUID;
 
 import de.nodeline.box.domain.model.record.MailAddress;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 
