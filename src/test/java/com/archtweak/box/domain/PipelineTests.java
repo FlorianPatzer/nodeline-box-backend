@@ -47,7 +47,7 @@ public class PipelineTests {
         sourceTran1.setOut(jTran1);
         links.add(sourceTran1);
         PeerToPeerConnection Tran1Tran2 = new PeerToPeerConnection();
-        Tran1Tran2.setIn(jTran1);;
+        Tran1Tran2.setIn(jTran1);
         Tran1Tran2.setOut(jTran2);
         links.add(Tran1Tran2);
         PeerToPeerConnection Tran2Sink = new PeerToPeerConnection();

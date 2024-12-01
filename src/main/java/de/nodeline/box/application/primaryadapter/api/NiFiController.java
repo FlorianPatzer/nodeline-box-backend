@@ -1,4 +1,4 @@
-package de.nodeline.box.application.adapter;
+package de.nodeline.box.application.primaryadapter.api;
 
 import java.util.Map;
 

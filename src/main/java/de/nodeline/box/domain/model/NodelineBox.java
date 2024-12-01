@@ -10,9 +10,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @AllArgsConstructor
+@EqualsAndHashCode
 public class NodelineBox {
     @Id
     private UUID id;
