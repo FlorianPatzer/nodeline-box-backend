@@ -1,8 +1,10 @@
 package de.nodeline.box.domain.model;
 
 import jakarta.persistence.Entity;
+import lombok.Data;
 
 @Entity
+@Data
 public class HttpGetRequest extends HttpRequest implements DataSourceInterface {
 
     public HttpGetRequest() {

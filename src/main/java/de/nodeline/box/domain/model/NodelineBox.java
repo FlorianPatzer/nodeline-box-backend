@@ -10,16 +10,18 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
+@Data
 @AllArgsConstructor
 @EqualsAndHashCode
 public class NodelineBox {
     @Id
     private UUID id;
 
-    @OneToMany(mappedBy = "nodelineBox", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "nodelineBox", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private Set<Pipeline> pipelines;
 
     @OneToOne

@@ -18,10 +18,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 
 @Entity
+@Data
 @AllArgsConstructor
 @Validated
 @EqualsAndHashCode
@@ -33,7 +35,7 @@ public class Device {
     @Setter
     private UUID id;
 
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "device", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     @JsonProperty("endpoints")
     @Valid
     private Set<Endpoint> endpoints;

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -24,12 +25,17 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 
 
 @Entity
+@Table(name="data_source")
+@Data
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @AllArgsConstructor
 @Validated
@@ -58,7 +64,7 @@ public class DataSource {
     @Valid
     private DataSourceInterface procurer;
 
-    @OneToMany(mappedBy = "source")
+    @OneToMany(mappedBy = "source", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JsonProperty("out")
     @Valid
     private Set<Link> out;

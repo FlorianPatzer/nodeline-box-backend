@@ -21,6 +21,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +30,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Validated
+@Data
 public class Pipeline {
     @Id
     @JsonProperty("id")
@@ -51,12 +53,11 @@ public class Pipeline {
         inverseJoinColumns = @JoinColumn(name = "pipeline_id")
     )
     @Setter
-    @Getter
     @JsonProperty("dataSources")
     @Valid
     private Set<DataSource> dataSources;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinTable(
         name = "pipeline_data_sink", // Join table name
         joinColumns = @JoinColumn(name = "data_sink_id"),
@@ -68,14 +69,14 @@ public class Pipeline {
     @Valid
     private Set<DataSink> dataSinks;
 
-    @OneToMany(mappedBy = "pipeline", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pipeline", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @Setter
     @Getter    
     @JsonProperty("linkables")
     @Valid
     private Set<Linkable> linkables;
     
-    @OneToMany(mappedBy = "pipeline", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pipeline", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @Setter
     @Getter    
     @JsonProperty("links")

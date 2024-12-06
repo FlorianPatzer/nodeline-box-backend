@@ -5,9 +5,11 @@ import java.util.Set;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
+@Data
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @EqualsAndHashCode(callSuper = true)
 abstract public class Transformation extends Linkable {

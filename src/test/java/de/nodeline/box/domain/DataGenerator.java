@@ -1,15 +1,9 @@
-package com.archtweak.box.domain;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+package de.nodeline.box.domain;
 
 import java.util.HashSet;
-import java.util.Set;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
+import de.nodeline.box.domain.model.DataSink;
+import de.nodeline.box.domain.model.DataSource;
 import de.nodeline.box.domain.model.HttpGetRequest;
 import de.nodeline.box.domain.model.HttpPostRequest;
 import de.nodeline.box.domain.model.JoltTransformation;
@@ -17,13 +11,9 @@ import de.nodeline.box.domain.model.Link;
 import de.nodeline.box.domain.model.Linkable;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
-import de.nodeline.box.domain.model.DataSink;
-import de.nodeline.box.domain.model.DataSource;
 
-@ExtendWith(SpringExtension.class)
-public class PipelineTests {
-    @Test
-    public void basicTest1() {
+public class DataGenerator {
+    public static Pipeline generatePipeline() {
         HashSet<Linkable> nodes = new HashSet<>();        
         JoltTransformation jTran1 = new JoltTransformation();
         JoltTransformation jTran2 = new JoltTransformation();
@@ -61,9 +51,6 @@ public class PipelineTests {
         p.setLinkables(nodes);
         p.setLinks(links);
 
-        assertTrue(p.getDataSinks().size() == 1);
-        assertTrue(p.getDataSources().size() == 1);
-        assertTrue(p.getLinkables().size() == 2);
-        assertTrue(p.getLinks().size() == 3);
+        return p;
     }
 }

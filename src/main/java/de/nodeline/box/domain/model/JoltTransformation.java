@@ -11,9 +11,11 @@ import com.fasterxml.jackson.annotation.Nulls;
 
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
+@Data
 @Validated
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
