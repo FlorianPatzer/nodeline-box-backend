@@ -19,7 +19,6 @@ import de.nodeline.box.domain.model.DataSource;
 import de.nodeline.box.domain.model.HttpGetRequest;
 import de.nodeline.box.domain.model.HttpPostRequest;
 import de.nodeline.box.domain.model.Pipeline;
-import de.nodeline.box.domain.port.repository.DataSourceRepository;
 
 public class PersistenceTests extends BaseTest {
     @Autowired
