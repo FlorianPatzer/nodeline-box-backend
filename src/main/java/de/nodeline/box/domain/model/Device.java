@@ -1,5 +1,6 @@
 package de.nodeline.box.domain.model;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -35,12 +36,17 @@ public class Device {
     @Setter
     private UUID id;
 
-    @OneToMany(mappedBy = "device", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "device", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonProperty("endpoints")
     @Valid
     private Set<Endpoint> endpoints;
 
     public Device() {
         this.id = UUID.randomUUID();
+        this.endpoints = new HashSet<>();
+    }
+
+    public void addEndpoint(Endpoint endpoint) {
+        this.endpoints.add(endpoint);
     }
 }
