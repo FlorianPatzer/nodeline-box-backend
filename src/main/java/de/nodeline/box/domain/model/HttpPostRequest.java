@@ -1,10 +1,8 @@
 package de.nodeline.box.domain.model;
 
 import jakarta.persistence.Entity;
-import lombok.Data;
 
 @Entity
-@Data
 public class HttpPostRequest extends HttpRequest implements DataSinkInterface {
     
     public HttpPostRequest() {

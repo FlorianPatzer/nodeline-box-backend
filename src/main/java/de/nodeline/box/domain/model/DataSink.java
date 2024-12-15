@@ -1,5 +1,6 @@
 package de.nodeline.box.domain.model;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import javax.validation.Valid;
 import org.hibernate.annotations.Any;
 import org.hibernate.annotations.AnyDiscriminatorValue;
 import org.hibernate.annotations.AnyKeyJavaClass;
+import org.hibernate.annotations.Cascade;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -60,15 +62,22 @@ public class DataSink {
     @Setter
     @JsonProperty("deliverer")
     @Valid
+    @Cascade({org.hibernate.annotations.CascadeType.ALL})
     private DataSinkInterface deliverer;    
 
-    @OneToMany(mappedBy = "sink", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "sink", cascade = {CascadeType.ALL})
     @JsonProperty("in")
     @Valid
     private Set<Link> in;
 
     public DataSink() {
         this.id = UUID.randomUUID();
+        this.in = new HashSet<>();
+        this.pipelines = new HashSet<>();
+    }
+
+    public void addIn(PeerToPeerConnection in) {
+        this.in.add(in);
     }
 
 }

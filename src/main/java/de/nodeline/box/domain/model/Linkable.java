@@ -1,5 +1,6 @@
 package de.nodeline.box.domain.model;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,5 +49,7 @@ public abstract class Linkable {
 
     protected Linkable() {
         this.id = UUID.randomUUID();
+        this.out = new HashSet<>();
+        this.in = new HashSet<>();
     }
 }
