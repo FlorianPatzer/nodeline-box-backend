@@ -52,4 +52,11 @@ public abstract class Linkable {
         this.out = new HashSet<>();
         this.in = new HashSet<>();
     }
+
+    public void addIn(Link in) {
+        this.in.add(in);
+    }
+    public void addOut(Link out) {
+        this.out.add(out);
+    }
 }
