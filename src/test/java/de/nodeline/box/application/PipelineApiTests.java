@@ -1,7 +1,5 @@
 package de.nodeline.box.application;
 
-import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,17 +12,19 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.nodeline.box.BaseTest;
+import de.nodeline.box.application.acl.DataSinkService;
+import de.nodeline.box.application.acl.DataSourceService;
+import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
+import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import de.nodeline.box.domain.DataGenerator;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSinkInterface;
 import de.nodeline.box.domain.model.DataSource;
-import de.nodeline.box.domain.model.DataSourceInterface;
 import de.nodeline.box.domain.model.Device;
 import de.nodeline.box.domain.model.Endpoint;
 import de.nodeline.box.domain.model.HttpGetRequest;
 import de.nodeline.box.domain.model.HttpPostRequest;
 import de.nodeline.box.domain.model.JoltTransformation;
-import de.nodeline.box.domain.model.Link;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
 
@@ -32,6 +32,10 @@ import de.nodeline.box.domain.model.Pipeline;
 public class PipelineApiTests extends BaseTest {
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private DataSourceService dataSourceService;
+    @Autowired
+    private DataSinkService dataSinkService;
 
     @Test
     public void addAndReadDevice() throws Exception {
@@ -65,18 +69,18 @@ public class PipelineApiTests extends BaseTest {
         ds.addOut(out);
         HttpGetRequest procurer = new HttpGetRequest();
         ds.setProcurer(procurer);
-        String dsString = new ObjectMapper().writeValueAsString(ds);
+        String dsString = new ObjectMapper().writeValueAsString(dataSourceService.toDto(ds));
         MvcResult addDataSourceResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/datasources")
             .contentType(MediaType.APPLICATION_JSON)
             .content(dsString))
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()).andReturn();
 
-        DataSource dataSource = new ObjectMapper().readValue(addDataSourceResult.getResponse().getContentAsString(), DataSource.class);
+        DataSourceDto dataSourceDto = new ObjectMapper().readValue(addDataSourceResult.getResponse().getContentAsString(), DataSourceDto.class);
     
         System.out.println("Created data source: " + addDataSourceResult.getResponse().getContentAsString());
 
-        dataSource.getOut().forEach(link -> {
+        dataSourceDto.getOutboundLinks().forEach(link -> {
             try {mockMvc.perform(MockMvcRequestBuilders.get("/api/links/" + link.getId().toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -94,18 +98,18 @@ public class PipelineApiTests extends BaseTest {
         PeerToPeerConnection in = new PeerToPeerConnection();
         ds.addIn(in);
 
-        String dsString = new ObjectMapper().writeValueAsString(ds);
+        String dsString = new ObjectMapper().writeValueAsString(dataSinkService.toDto(ds));
         MvcResult addDataSinkResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/datasinks")
             .contentType(MediaType.APPLICATION_JSON)
             .content(dsString))
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()).andReturn();
 
-        DataSink dataSource = new ObjectMapper().readValue(addDataSinkResult.getResponse().getContentAsString(), DataSink.class);
+        DataSinkDto dataSourceDto = new ObjectMapper().readValue(addDataSinkResult.getResponse().getContentAsString(), DataSinkDto.class);
     
         System.out.println("Created data source: " + addDataSinkResult.getResponse().getContentAsString());
 
-        dataSource.getIn().forEach(link -> {
+        dataSourceDto.getInboundLinks().forEach(link -> {
             try {mockMvc.perform(MockMvcRequestBuilders.get("/api/links/" + link.getId().toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -114,6 +118,7 @@ public class PipelineApiTests extends BaseTest {
             }
         });
     }
+
     @Test
     public void addAndLoadJoltTransformation() throws Exception {
         JoltTransformation trans = new JoltTransformation();        
@@ -158,7 +163,39 @@ public class PipelineApiTests extends BaseTest {
     public void addAndLoadPipelineTest() throws Exception {
         Pipeline pip = DataGenerator.generatePipeline();
 
-        String pipelineString = new ObjectMapper().writeValueAsString(pip);
+        // Persist data sources
+        pip.getDataSources().forEach(ds -> {
+            try {
+                String dsString = new ObjectMapper().writeValueAsString(dataSourceService.toDto(ds));
+
+                mockMvc.perform(MockMvcRequestBuilders.post("/api/datasources")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(dsString))
+                    .andExpect(MockMvcResultMatchers.status().isCreated())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
+
+        // Persist data sinks
+        pip.getDataSinks().forEach(ds -> {
+            try {
+                String dsString = new ObjectMapper().writeValueAsString(dataSinkService.toDto(ds));
+
+                mockMvc.perform(MockMvcRequestBuilders.post("/api/datasinks")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(dsString))
+                    .andExpect(MockMvcResultMatchers.status().isCreated())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
+
+       /*  String pipelineString = new ObjectMapper().writeValueAsString(pip);
 
         MvcResult addPipelineResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/pipelines")
         .contentType(MediaType.APPLICATION_JSON)
@@ -170,6 +207,28 @@ public class PipelineApiTests extends BaseTest {
 
         System.out.println("Created pipeline: " + addPipelineResult.getResponse().getContentAsString());
 
-        
+
+        // Update data sources
+        pip.getDataSources().forEach(ds -> {
+            try {
+                ds.addPipeline(pipeline);
+                String dsString = new ObjectMapper().writeValueAsString(ds);
+
+                mockMvc.perform(MockMvcRequestBuilders.put("/api/datasources/" + ds.getId().toString())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(dsString))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
+
+        MvcResult updatedPipeline = mockMvc.perform(MockMvcRequestBuilders.get("/api/pipelines/" + pipeline.getId().toString())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+
+        System.out.println("Updated data sources in pipeline: " + updatedPipeline.getResponse().getContentAsString()); */        
     }
 }

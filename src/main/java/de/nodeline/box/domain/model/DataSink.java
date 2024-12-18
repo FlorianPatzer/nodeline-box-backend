@@ -13,10 +13,13 @@ import org.hibernate.annotations.AnyKeyJavaClass;
 import org.hibernate.annotations.Cascade;
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -40,17 +43,13 @@ import lombok.Setter;
 @Table(name="data_sink")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of={"id", "deliverer", "in"})
 public class DataSink {
     @Id
-    @JsonProperty("id")
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)  // Exclude from JSON if absent
-    @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
     @Setter
     private UUID id;
 
     @ManyToMany(mappedBy = "dataSinks") // Reference to the `courses` field in Student
-    @JsonProperty("pipelines")
     @Valid
     private Set<Pipeline> pipelines;
 
@@ -60,13 +59,11 @@ public class DataSink {
     @Column(name = "deliverer_type")
     @AnyDiscriminatorValue(discriminator="http_post", entity=HttpPostRequest.class)
     @Setter
-    @JsonProperty("deliverer")
     @Valid
     @Cascade({org.hibernate.annotations.CascadeType.ALL})
     private DataSinkInterface deliverer;    
 
     @OneToMany(mappedBy = "sink", cascade = {CascadeType.ALL})
-    @JsonProperty("in")
     @Valid
     private Set<Link> in;
 
@@ -80,4 +77,20 @@ public class DataSink {
         this.in.add(in);
     }
 
+    
+    public void addPipeline(Pipeline pipeline) {
+        /* if(! pipeline.getDataSinks().contains(this)) {
+            pipeline.addDataSink(this);
+        } */
+        this.pipelines.add(pipeline);
+    }
+
+   /*  public void setPipelines(Set<Pipeline> pipelines) {
+        pipelines.forEach(p -> {
+            if(!p.getDataSinks().contains(this)) {
+                p.addDataSink(this);
+            }
+        });
+        this.pipelines = pipelines;
+    } */
 }

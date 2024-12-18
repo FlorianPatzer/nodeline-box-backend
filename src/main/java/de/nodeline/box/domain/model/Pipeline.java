@@ -7,10 +7,12 @@ import javax.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -28,7 +30,8 @@ import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
-@EqualsAndHashCode
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@EqualsAndHashCode(of={"id", "nodelineBox", "linkables", "links"})
 @Validated
 @Data
 public class Pipeline {
@@ -57,7 +60,7 @@ public class Pipeline {
     @Valid
     private Set<DataSource> dataSources;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @ManyToMany
     @JoinTable(
         name = "pipeline_data_sink", // Join table name
         joinColumns = @JoinColumn(name = "data_sink_id"),
@@ -87,4 +90,36 @@ public class Pipeline {
         this.id = UUID.randomUUID();
     }
 
+    /* public void setDataSources(Set<DataSource> dataSources) {
+        this.dataSources = dataSources;
+        dataSources.forEach(ds -> {
+            if(! ds.getPipelines().contains(this)) {
+                ds.addPipeline(this);
+            }
+        });
+    } */
+
+    public void addDataSource(DataSource dataSource) {
+        this.dataSources.add(dataSource);
+        /* if(! dataSource.getPipelines().contains(this)) {
+            dataSource.addPipeline(this);
+        } */
+    }
+    
+    /* public void setDataSinks(Set<DataSink> dataSinks) {
+        this.dataSinks = dataSinks;
+        dataSinks.forEach(ds -> {
+            if(! ds.getPipelines().contains(this)) {
+                ds.addPipeline(this);
+            }
+        });
+    } */
+
+    public void addDataSink(DataSink dataSink) {
+        this.dataSinks.add(dataSink);
+        /* if(! dataSink.getPipelines().contains(this)) {
+            dataSink.addPipeline(this);
+        } */
+    }
+    
 }

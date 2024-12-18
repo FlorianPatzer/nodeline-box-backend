@@ -1,7 +1,8 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.domain.model.DataSink;
-import de.nodeline.box.application.DataSinkService;
+import de.nodeline.box.application.acl.DataSinkService;
+import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,25 +19,25 @@ public class DataSinkController {
     private DataSinkService dataSinkService;
 
     @GetMapping
-    public ResponseEntity<List<DataSink>> getAllDataSinks() {
+    public ResponseEntity<List<DataSinkDto>> getAllDataSinks() {
         return ResponseEntity.ok(dataSinkService.getAllDataSinks());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DataSink> getDataSinkById(@PathVariable UUID id) {
-        Optional<DataSink> dataSink = dataSinkService.getDataSinkById(id);
+    public ResponseEntity<DataSinkDto> getDataSinkById(@PathVariable UUID id) {
+        Optional<DataSinkDto> dataSink = dataSinkService.getDataSinkById(id);
         return dataSink.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<DataSink> createDataSink(@RequestBody DataSink dataSink) {
-        DataSink createdDataSink = dataSinkService.createDataSink(dataSink);
+    public ResponseEntity<DataSinkDto> createDataSink(@RequestBody DataSinkDto dataSinkDto) {
+        DataSinkDto createdDataSink = dataSinkService.createDataSink(dataSinkDto);
         return ResponseEntity.status(201).body(createdDataSink);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DataSink> updateDataSink(@PathVariable UUID id, @RequestBody DataSink dataSink) {
-        Optional<DataSink> updatedDataSink = dataSinkService.updateDataSink(id, dataSink);
+    public ResponseEntity<DataSinkDto> updateDataSink(@PathVariable UUID id, @RequestBody DataSinkDto dataSinkDto) {
+        Optional<DataSinkDto> updatedDataSink = dataSinkService.updateDataSink(id, dataSinkDto);
         return updatedDataSink.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
