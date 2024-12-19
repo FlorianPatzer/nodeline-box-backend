@@ -1,7 +1,8 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.domain.model.Link;
-import de.nodeline.box.application.LinkService;
+import de.nodeline.box.application.acl.PeerToPeerConnectionService;
+import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,28 +16,28 @@ import java.util.UUID;
 public class LinkController {
 
     @Autowired
-    private LinkService linkService;
+    private PeerToPeerConnectionService linkService;
 
     @GetMapping
-    public ResponseEntity<List<Link>> getAllLinks() {
+    public ResponseEntity<List<PeerToPeerDto>> getAllLinks() {
         return ResponseEntity.ok(linkService.getAllLinks());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Link> getLinkById(@PathVariable UUID id) {
-        Optional<Link> link = linkService.getLinkById(id);
+    public ResponseEntity<PeerToPeerDto> getLinkById(@PathVariable UUID id) {
+        Optional<PeerToPeerDto> link = linkService.getLinkById(id);
         return link.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Link> createLink(@RequestBody Link link) {
-        Link createdLink = linkService.createLink(link);
+    public ResponseEntity<PeerToPeerDto> createLink(@RequestBody PeerToPeerDto link) {
+        PeerToPeerDto createdLink = linkService.createLink(link);
         return ResponseEntity.status(201).body(createdLink);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Link> updateLink(@PathVariable UUID id, @RequestBody Link link) {
-        Optional<Link> updatedLink = linkService.updateLink(id, link);
+    public ResponseEntity<PeerToPeerDto> updateLink(@PathVariable UUID id, @RequestBody PeerToPeerDto link) {
+        Optional<PeerToPeerDto> updatedLink = linkService.updateLink(id, link);
         return updatedLink.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

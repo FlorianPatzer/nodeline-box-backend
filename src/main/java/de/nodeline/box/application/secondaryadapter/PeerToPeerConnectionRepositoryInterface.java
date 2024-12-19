@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import de.nodeline.box.domain.model.Link;
 
 @Repository
-public interface LinkRepositoryInterface extends JpaRepository<Link, UUID> {
+public interface PeerToPeerConnectionRepositoryInterface extends JpaRepository<Link, UUID> {
 }

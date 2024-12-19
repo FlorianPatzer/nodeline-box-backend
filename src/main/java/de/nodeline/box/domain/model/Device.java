@@ -30,14 +30,10 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class Device {
     @Id
-    @JsonProperty("id")
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)  // Exclude from JSON if absent
-    @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
     @Setter
     private UUID id;
 
     @OneToMany(mappedBy = "device", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonProperty("endpoints")
     @Valid
     private Set<Endpoint> endpoints;
 

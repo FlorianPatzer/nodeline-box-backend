@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 
-import de.nodeline.box.domain.model.DataSink;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,8 +17,6 @@ public class PipelineDto {
     @JsonProperty("id")
     @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
     private UUID id;
-    @JsonProperty("nodeline-box")
-    private NodelineBoxDto nodelineBox;
     @JsonProperty("dataSources")
     private Set<DataSourceDto> dataSources;
     @JsonProperty("dataSinks")
@@ -27,7 +24,7 @@ public class PipelineDto {
     @JsonProperty("linkables")
     private Set<LinkableDto> linkables;
     @JsonProperty("links")
-    private Set<LinkDto> links;
+    private Set<PeerToPeerDto> links;
 
     public PipelineDto() {
         this.dataSinks = new HashSet<>();
@@ -48,7 +45,7 @@ public class PipelineDto {
         this.linkables.add(linkable);
     }
 
-    public void addLink(LinkDto link) {
+    public void addLink(PeerToPeerDto link) {
         this.links.add(link);
     }
 }

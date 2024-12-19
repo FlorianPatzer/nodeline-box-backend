@@ -1,7 +1,6 @@
 package de.nodeline.box.application.acl;
 
 import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
-import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
 import de.nodeline.box.application.primaryadapter.api.dto.ProcurerDto;
 import de.nodeline.box.application.secondaryadapter.DataSourceRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.HttpGetRequestRepositoryInterface;
@@ -46,9 +45,9 @@ public class DataSourceService {
                     break;
             }
         }
-        if(! dto.getOutboundLinks().isEmpty()) {
-            dto.getOutboundLinks().forEach(link -> {
-                Optional<PeerToPeerConnection> conEntity = peerToPeerRepository.findById(link.getId());
+        if(! dto.getOutboundLinkIds().isEmpty()) {
+            dto.getOutboundLinkIds().forEach(linkId -> {
+                Optional<PeerToPeerConnection> conEntity = peerToPeerRepository.findById(linkId);
                 if(conEntity.isPresent()) {
                     entity.addOut(conEntity.get());
                 }
@@ -84,9 +83,7 @@ public class DataSourceService {
         if(! entity.getOut().isEmpty()) {
             entity.getOut().forEach(out -> {
                 if(out instanceof PeerToPeerConnection) {
-                    PeerToPeerDto linkDto = new PeerToPeerDto();
-                    linkDto.setId(out.getId());
-                    dto.addOutboundLink(linkDto);
+                    dto.addOutboundLinkId(out.getId());
                 }
             });
         }

@@ -1,7 +1,8 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.domain.model.Pipeline;
-import de.nodeline.box.application.PipelineService;
+import de.nodeline.box.application.acl.PipelineService;
+import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,8 @@ public class PipelineController {
      * @return List of pipelines
      */
     @GetMapping
-    public ResponseEntity<List<Pipeline>> getAllPipelines() {
-        List<Pipeline> pipelines = pipelineService.getAllPipelines();
+    public ResponseEntity<List<PipelineDto>> getAllPipelines() {
+        List<PipelineDto> pipelines = pipelineService.getAllPipelines();
         return ResponseEntity.ok(pipelines);
     }
 
@@ -35,8 +36,8 @@ public class PipelineController {
      * @return Pipeline details or 404 if not found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Pipeline> getPipelineById(@PathVariable UUID id) {
-        Optional<Pipeline> pipeline = pipelineService.getPipelineById(id);
+    public ResponseEntity<PipelineDto> getPipelineById(@PathVariable UUID id) {
+        Optional<PipelineDto> pipeline = pipelineService.getPipelineById(id);
         if (pipeline.isPresent()) {
             return ResponseEntity.ok(pipeline.get());
         } else {
@@ -51,8 +52,8 @@ public class PipelineController {
      * @return Created pipeline
      */
     @PostMapping
-    public ResponseEntity<Pipeline> createPipeline(@RequestBody Pipeline pipeline) {
-        Pipeline createdPipeline = pipelineService.createPipeline(pipeline);
+    public ResponseEntity<PipelineDto> createPipeline(@RequestBody PipelineDto pipeline) {
+        PipelineDto createdPipeline = pipelineService.createPipeline(pipeline);
         return ResponseEntity.status(201).body(createdPipeline);
     }
 
@@ -64,8 +65,8 @@ public class PipelineController {
      * @return Updated pipeline or 404 if not found
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Pipeline> updatePipeline(@PathVariable UUID id, @RequestBody Pipeline pipeline) {
-        Optional<Pipeline> updatedPipeline = pipelineService.updatePipeline(id, pipeline);
+    public ResponseEntity<PipelineDto> updatePipeline(@PathVariable UUID id, @RequestBody PipelineDto pipeline) {
+        Optional<PipelineDto> updatedPipeline = pipelineService.updatePipeline(id, pipeline);
         if (updatedPipeline.isPresent()) {
             return ResponseEntity.ok(updatedPipeline.get());
         } else {

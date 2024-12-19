@@ -21,16 +21,16 @@ public class DataSinkDto {
     private Set<UUID> pipelineIds;
     @JsonProperty("deliverer")
     private DelivererDto deliverer;
-    @JsonProperty("inboundLinks")
-    private Set<PeerToPeerDto> inboundLinks;
+    @JsonProperty("inboundLinkIds")
+    private Set<UUID> inboundLinkIds;
 
     public DataSinkDto() {
         pipelineIds = new HashSet<>();
-        inboundLinks = new HashSet<>();
+        inboundLinkIds = new HashSet<>();
     }
 
-    public void addInboundLink(PeerToPeerDto link) {
-        this.inboundLinks.add(link);
+    public void addInboundLinkId(UUID link) {
+        this.inboundLinkIds.add(link);
     }
 
     public void addPipelineId(UUID id) {

@@ -20,16 +20,16 @@ public class DataSourceDto {
     private Set<UUID> pipelineIds;
     @JsonProperty("procurer")
     private ProcurerDto procurer;
-    @JsonProperty("outboundLinks")
-    private Set<PeerToPeerDto> outboundLinks;
+    @JsonProperty("outboundLinkIds")
+    private Set<UUID> outboundLinkIds;
 
     public DataSourceDto() {
         pipelineIds = new HashSet<>();
-        outboundLinks = new HashSet<>();
+        outboundLinkIds = new HashSet<>();
     }
 
-    public void addOutboundLink(PeerToPeerDto link) {
-        this.outboundLinks.add(link);
+    public void addOutboundLinkId(UUID linkId) {
+        this.outboundLinkIds.add(linkId);
     }
 
     public void addPipelineId(UUID id) {

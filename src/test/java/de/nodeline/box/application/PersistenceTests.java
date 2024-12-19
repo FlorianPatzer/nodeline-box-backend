@@ -10,9 +10,9 @@ import de.nodeline.box.application.secondaryadapter.DataSinkRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.DataSourceRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.HttpGetRequestRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.HttpPostRequestRepositoryInterface;
-import de.nodeline.box.application.secondaryadapter.LinkRepositoryInterface;
+import de.nodeline.box.application.secondaryadapter.JoltTransformationRepositoryInterface;
+import de.nodeline.box.application.secondaryadapter.PeerToPeerConnectionRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
-import de.nodeline.box.application.secondaryadapter.TransformationRepositoryInterface;
 import de.nodeline.box.domain.DataGenerator;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;
@@ -28,9 +28,9 @@ public class PersistenceTests extends BaseTest {
     @Autowired
     private DataSinkRepositoryInterface dataSinkRepo;
     @Autowired
-    private TransformationRepositoryInterface transRepo;
+    private JoltTransformationRepositoryInterface transRepo;
     @Autowired
-    private LinkRepositoryInterface linkRepo;
+    private PeerToPeerConnectionRepositoryInterface linkRepo;
     @Autowired
     private HttpGetRequestRepositoryInterface procurerRepo;
     @Autowired

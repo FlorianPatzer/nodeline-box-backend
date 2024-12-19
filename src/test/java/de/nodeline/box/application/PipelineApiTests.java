@@ -80,7 +80,7 @@ public class PipelineApiTests extends BaseTest {
     
         System.out.println("Created data source: " + addDataSourceResult.getResponse().getContentAsString());
 
-        dataSourceDto.getOutboundLinks().forEach(link -> {
+        dataSourceDto.getOutboundLinkIds().forEach(link -> {
             try {mockMvc.perform(MockMvcRequestBuilders.get("/api/links/" + link.getId().toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -109,7 +109,7 @@ public class PipelineApiTests extends BaseTest {
     
         System.out.println("Created data source: " + addDataSinkResult.getResponse().getContentAsString());
 
-        dataSourceDto.getInboundLinks().forEach(link -> {
+        dataSourceDto.getInboundLinkIds().forEach(link -> {
             try {mockMvc.perform(MockMvcRequestBuilders.get("/api/links/" + link.getId().toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -195,7 +195,7 @@ public class PipelineApiTests extends BaseTest {
             }
         });
 
-       /*  String pipelineString = new ObjectMapper().writeValueAsString(pip);
+        String pipelineString = new ObjectMapper().writeValueAsString(pip);
 
         MvcResult addPipelineResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/pipelines")
         .contentType(MediaType.APPLICATION_JSON)
@@ -229,6 +229,6 @@ public class PipelineApiTests extends BaseTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
-        System.out.println("Updated data sources in pipeline: " + updatedPipeline.getResponse().getContentAsString()); */        
+        System.out.println("Updated data sources in pipeline: " + updatedPipeline.getResponse().getContentAsString());        
     }
 }

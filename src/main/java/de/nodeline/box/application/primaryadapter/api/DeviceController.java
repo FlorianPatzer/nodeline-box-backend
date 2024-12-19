@@ -1,7 +1,8 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.domain.model.Device;
-import de.nodeline.box.application.DeviceService;
+import de.nodeline.box.application.acl.DeviceService;
+import de.nodeline.box.application.primaryadapter.api.dto.DeviceDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,25 +19,25 @@ public class DeviceController {
     private DeviceService deviceService;
 
     @GetMapping
-    public ResponseEntity<List<Device>> getAllDevices() {
+    public ResponseEntity<List<DeviceDto>> getAllDevices() {
         return ResponseEntity.ok(deviceService.getAllDevices());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Device> getDeviceById(@PathVariable UUID id) {
-        Optional<Device> device = deviceService.getDeviceById(id);
+    public ResponseEntity<DeviceDto> getDeviceById(@PathVariable UUID id) {
+        Optional<DeviceDto> device = deviceService.getDeviceById(id);
         return device.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Device> createDevice(@RequestBody Device device) {
-        Device createdDevice = deviceService.createDevice(device);
+    public ResponseEntity<DeviceDto> createDevice(@RequestBody DeviceDto device) {
+        DeviceDto createdDevice = deviceService.createDevice(device);
         return ResponseEntity.status(201).body(createdDevice);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Device> updateDevice(@PathVariable UUID id, @RequestBody Device device) {
-        Optional<Device> updatedDevice = deviceService.updateDevice(id, device);
+    public ResponseEntity<DeviceDto> updateDevice(@PathVariable UUID id, @RequestBody DeviceDto device) {
+        Optional<DeviceDto> updatedDevice = deviceService.updateDevice(id, device);
         return updatedDevice.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
