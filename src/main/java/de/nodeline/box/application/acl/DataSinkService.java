@@ -2,7 +2,7 @@ package de.nodeline.box.application.acl;
 
 import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DelivererDto;
-import de.nodeline.box.application.primaryadapter.api.dto.LinkDto;
+import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
 import de.nodeline.box.application.secondaryadapter.DataSinkRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.HttpPostRequestRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PeerToPeerRepositoryInterface;
@@ -47,16 +47,9 @@ public class DataSinkService {
         }
         if(! dto.getInboundLinks().isEmpty()) {
             dto.getInboundLinks().forEach(link -> {
-                switch (link.getType()) {
-                    case LinkDto.Type.PEER_TO_PEER:
-                        Optional<PeerToPeerConnection> conEntity = peerToPeerRepository.findById(link.getId());
-                        if(conEntity.isPresent()) {
-                            entity.addIn(conEntity.get());
-                        }
-                        break;
-                
-                    default:
-                        break;
+                Optional<PeerToPeerConnection> conEntity = peerToPeerRepository.findById(link.getId());
+                if(conEntity.isPresent()) {
+                    entity.addIn(conEntity.get());
                 }
             });
         }
@@ -89,16 +82,10 @@ public class DataSinkService {
         }
         if(! entity.getIn().isEmpty()) {
             entity.getIn().forEach(in -> {
-                LinkDto linkDto = new LinkDto();
-                switch (in) {
-                    case PeerToPeerConnection l:
-                        linkDto.setType(LinkDto.Type.PEER_TO_PEER);
-                        linkDto.setId(l.getId());
-                        dto.addInboundLink(linkDto);
-                        break;
-                
-                    default:
-                        break;
+                if(in instanceof PeerToPeerConnection) {
+                    PeerToPeerDto linkDto = new PeerToPeerDto();
+                    linkDto.setId(in.getId());
+                    dto.addInboundLink(linkDto);
                 }
             });
         }

@@ -2,10 +2,8 @@ package de.nodeline.box.application.secondaryadapter;
 
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import de.nodeline.box.domain.model.Transformation;
 
-@Repository
-public interface TransformationRepositoryInterface extends JpaRepository<Transformation, UUID> {
+public interface TransformationRepositoryInterface<T extends Transformation> extends JpaRepository<T, UUID> {
 }

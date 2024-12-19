@@ -7,13 +7,6 @@ import javax.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -30,22 +23,17 @@ import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @EqualsAndHashCode(of={"id", "nodelineBox", "linkables", "links"})
 @Validated
 @Data
 public class Pipeline {
     @Id
-    @JsonProperty("id")
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)  // Exclude from JSON if absent
-    @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
     @Setter
     @Getter
     private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "nodeline_box_id", referencedColumnName = "id")
-    @JsonProperty("nodeline-box")
     @Valid
     private NodelineBox nodelineBox;
 
@@ -56,7 +44,6 @@ public class Pipeline {
         inverseJoinColumns = @JoinColumn(name = "pipeline_id")
     )
     @Setter
-    @JsonProperty("dataSources")
     @Valid
     private Set<DataSource> dataSources;
 
@@ -68,21 +55,18 @@ public class Pipeline {
     )
     @Setter
     @Getter
-    @JsonProperty("dataSinks")
     @Valid
     private Set<DataSink> dataSinks;
 
     @OneToMany(mappedBy = "pipeline", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @Setter
     @Getter    
-    @JsonProperty("linkables")
     @Valid
     private Set<Linkable> linkables;
     
     @OneToMany(mappedBy = "pipeline", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @Setter
     @Getter    
-    @JsonProperty("links")
     @Valid
     private Set<Link> links;
 
@@ -90,36 +74,20 @@ public class Pipeline {
         this.id = UUID.randomUUID();
     }
 
-    /* public void setDataSources(Set<DataSource> dataSources) {
-        this.dataSources = dataSources;
-        dataSources.forEach(ds -> {
-            if(! ds.getPipelines().contains(this)) {
-                ds.addPipeline(this);
-            }
-        });
-    } */
-
     public void addDataSource(DataSource dataSource) {
         this.dataSources.add(dataSource);
-        /* if(! dataSource.getPipelines().contains(this)) {
-            dataSource.addPipeline(this);
-        } */
     }
-    
-    /* public void setDataSinks(Set<DataSink> dataSinks) {
-        this.dataSinks = dataSinks;
-        dataSinks.forEach(ds -> {
-            if(! ds.getPipelines().contains(this)) {
-                ds.addPipeline(this);
-            }
-        });
-    } */
 
     public void addDataSink(DataSink dataSink) {
         this.dataSinks.add(dataSink);
-        /* if(! dataSink.getPipelines().contains(this)) {
-            dataSink.addPipeline(this);
-        } */
+    }
+
+    public void addLinkable(Linkable linkable) {
+        this.linkables.add(linkable);
+    }
+
+    public void addLink(Link link) {
+        this.links.add(link);
     }
     
 }

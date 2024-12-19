@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import de.nodeline.box.application.TransformationService;
+import de.nodeline.box.application.acl.TransformationService;
+import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.domain.model.Transformation;
 
 import java.util.List;
@@ -17,11 +18,23 @@ import java.util.UUID;
 public class TransformationController {
 
     @Autowired
-    private TransformationService transformationService;
+    private JoltTransformationService joltTransformationService;
+
+    private TransformationService getServiceByType(LinkableDto.Type type) {
+        switch (type) {
+            case LinkableDto.Type.JOLT_TRANSFORMATION:
+                return joltTransformationService;
+                break;
+        
+            default:
+                throw new RuntimeException("No service defined for type " + type);
+        }
+    }
 
     @GetMapping
+    @RequestMapping("/jolt")
     public ResponseEntity<List<Transformation>> getAllTransformations() {
-        return ResponseEntity.ok(transformationService.getAllTransformations());
+        return ResponseEntity.ok(getServiceByType(LinkableDto.Type.JOLT_TRANSFORMATION).getAllTransformations());
     }
 
     @GetMapping("/{id}")

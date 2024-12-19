@@ -21,14 +21,14 @@ public class DataSourceDto {
     @JsonProperty("procurer")
     private ProcurerDto procurer;
     @JsonProperty("outboundLinks")
-    private Set<LinkDto> outboundLinks;
+    private Set<PeerToPeerDto> outboundLinks;
 
     public DataSourceDto() {
         pipelineIds = new HashSet<>();
         outboundLinks = new HashSet<>();
     }
 
-    public void addOutboundLink(LinkDto link) {
+    public void addOutboundLink(PeerToPeerDto link) {
         this.outboundLinks.add(link);
     }
 
