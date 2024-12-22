@@ -2,11 +2,13 @@ package de.nodeline.box.application.acl;
 
 import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DelivererDto;
+import de.nodeline.box.application.primaryadapter.api.dto.HttpPostRequestAttributesDto;
 import de.nodeline.box.application.secondaryadapter.DataSinkRepositoryInterface;
-import de.nodeline.box.application.secondaryadapter.HttpPostRequestRepositoryInterface;
+import de.nodeline.box.application.secondaryadapter.EndpointRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PeerToPeerRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
 import de.nodeline.box.domain.model.DataSink;
+import de.nodeline.box.domain.model.Endpoint;
 import de.nodeline.box.domain.model.HttpPostRequest;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
@@ -21,11 +23,12 @@ public class DataSinkService {
     @Autowired
     private DataSinkRepositoryInterface dataSinkRepository;
     @Autowired
-    private HttpPostRequestRepositoryInterface httpPostRequestRepository;
-    @Autowired
     private PeerToPeerRepositoryInterface peerToPeerRepository;
     @Autowired
     private PipelineRepositoryInterface pipelineRepository;
+    @Autowired
+    private EndpointRepositoryInterface endpointRepository;
+
 
 
     public DataSink toEntity(DataSinkDto dto) {
@@ -34,10 +37,16 @@ public class DataSinkService {
         if(dto.getDeliverer() != null) {
             switch (dto.getDeliverer().getType()) {
                 case DelivererDto.Type.POST_REQUEST:
-                    Optional<HttpPostRequest> reqEntity = httpPostRequestRepository.findById(dto.getDeliverer().getId());
-                    if(reqEntity.isPresent()) {
-                        entity.setDeliverer(reqEntity.get());
+                    HttpPostRequest reqEntity = new HttpPostRequest();
+                    reqEntity.setId(dto.getDeliverer().getId());
+                    reqEntity.setUrl(((HttpPostRequestAttributesDto) dto.getDeliverer().getAttributes()).getUrl());
+                    if(((HttpPostRequestAttributesDto) dto.getDeliverer().getAttributes()).getEndpointId() != null) {
+                        Optional<Endpoint> endpointEntity = endpointRepository.findById(((HttpPostRequestAttributesDto) dto.getDeliverer().getAttributes()).getEndpointId());
+                        if(endpointEntity.isPresent()) {
+                            reqEntity.setEndpoint(endpointEntity.get());
+                        }
                     }
+                    entity.setDeliverer(reqEntity);
                     break;
             
                 default:
@@ -69,10 +78,16 @@ public class DataSinkService {
         if(entity.getDeliverer() != null) {
             switch (entity.getDeliverer()) {
                 case HttpPostRequest deliverer:
-                    DelivererDto ddto = new DelivererDto();
-                    ddto.setId(deliverer.getId());
-                    ddto.setType(DelivererDto.Type.POST_REQUEST);
-                    dto.setDeliverer(ddto);
+                    DelivererDto delivererDto = new DelivererDto();
+                    delivererDto.setId(deliverer.getId());
+                    delivererDto.setType(DelivererDto.Type.POST_REQUEST);
+                    HttpPostRequestAttributesDto delivererAttrDto =  new HttpPostRequestAttributesDto();
+                    if(deliverer.getEndpoint() != null) {
+                        delivererAttrDto.setEndpointId(deliverer.getEndpoint().getId());
+                    }
+                    delivererAttrDto.setUrl(deliverer.getUrl());
+                    delivererDto.setAttributes(delivererAttrDto);
+                    dto.setDeliverer(delivererDto);
                     break;
             
                 default:

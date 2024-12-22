@@ -7,10 +7,12 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class LinkableReferenceDto {
     @JsonProperty("id")
     @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null

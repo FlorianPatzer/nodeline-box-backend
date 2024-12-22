@@ -1,12 +1,14 @@
 package de.nodeline.box.application.acl;
 
 import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
+import de.nodeline.box.application.primaryadapter.api.dto.HttpGetRequestAttributesDto;
 import de.nodeline.box.application.primaryadapter.api.dto.ProcurerDto;
 import de.nodeline.box.application.secondaryadapter.DataSourceRepositoryInterface;
-import de.nodeline.box.application.secondaryadapter.HttpGetRequestRepositoryInterface;
+import de.nodeline.box.application.secondaryadapter.EndpointRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PeerToPeerRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
 import de.nodeline.box.domain.model.DataSource;
+import de.nodeline.box.domain.model.Endpoint;
 import de.nodeline.box.domain.model.HttpGetRequest;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
@@ -22,11 +24,11 @@ public class DataSourceService {
     @Autowired
     private DataSourceRepositoryInterface dataSourceRepository;
     @Autowired
-    private HttpGetRequestRepositoryInterface httpGetRequestRepository;
-    @Autowired
     private PeerToPeerRepositoryInterface peerToPeerRepository;
     @Autowired
     private PipelineRepositoryInterface pipelineRepository;
+    @Autowired
+    private EndpointRepositoryInterface endpointRepository;
 
 
     public DataSource toEntity(DataSourceDto dto) {
@@ -35,10 +37,16 @@ public class DataSourceService {
         if(dto.getProcurer() != null) {
             switch (dto.getProcurer().getType()) {
                 case ProcurerDto.Type.GET_REQUEST:
-                    Optional<HttpGetRequest> reqEntity = httpGetRequestRepository.findById(dto.getProcurer().getId());
-                    if(reqEntity.isPresent()) {
-                        entity.setProcurer(reqEntity.get());
+                    HttpGetRequest reqEntity = new HttpGetRequest();
+                    reqEntity.setId(dto.getProcurer().getId());
+                    reqEntity.setUrl(((HttpGetRequestAttributesDto) dto.getProcurer().getAttributes()).getUrl());
+                    if(((HttpGetRequestAttributesDto) dto.getProcurer().getAttributes()).getEndpointId() != null) {
+                        Optional<Endpoint> endpointEntity = endpointRepository.findById(((HttpGetRequestAttributesDto) dto.getProcurer().getAttributes()).getEndpointId());
+                        if(endpointEntity.isPresent()) {
+                            reqEntity.setEndpoint(endpointEntity.get());
+                        }
                     }
+                    entity.setProcurer(reqEntity);
                     break;
             
                 default:
@@ -70,10 +78,16 @@ public class DataSourceService {
         if(entity.getProcurer() != null) {
             switch (entity.getProcurer()) {
                 case HttpGetRequest procurer:
-                    ProcurerDto ddto = new ProcurerDto();
-                    ddto.setId(procurer.getId());
-                    ddto.setType(ProcurerDto.Type.GET_REQUEST);
-                    dto.setProcurer(ddto);
+                    ProcurerDto procDto = new ProcurerDto();
+                    procDto.setId(procurer.getId());
+                    procDto.setType(ProcurerDto.Type.GET_REQUEST);
+                    HttpGetRequestAttributesDto procAttrDto =  new HttpGetRequestAttributesDto();
+                    if(procurer.getEndpoint() != null) {
+                        procAttrDto.setEndpointId(procurer.getEndpoint().getId());
+                    }
+                    procAttrDto.setUrl(procurer.getUrl());
+                    procDto.setAttributes(procAttrDto);
+                    dto.setProcurer(procDto);
                     break;
             
                 default:

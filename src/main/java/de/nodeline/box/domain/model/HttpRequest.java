@@ -27,18 +27,12 @@ import lombok.EqualsAndHashCode;
 public abstract class HttpRequest {
     @Id
     @JsonProperty("id")
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)  // Exclude from JSON if absent
-    @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
     private UUID id;
     
     @OneToOne
-    @JoinColumn(name = "endpoint_id", referencedColumnName = "id")
-    @JsonProperty("endpoint")
     private Endpoint endpoint;
 
     @JsonProperty("url")
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)  // Exclude from JSON if absent
-    @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
     private String url;
     
     protected HttpRequest() {

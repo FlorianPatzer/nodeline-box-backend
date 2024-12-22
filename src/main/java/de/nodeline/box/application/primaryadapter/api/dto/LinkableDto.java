@@ -1,5 +1,6 @@
 package de.nodeline.box.application.primaryadapter.api.dto;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +27,11 @@ public class LinkableDto {
     private LinkableAttributesDto attributes;    
     @JsonProperty("pipelineId")
     private UUID pipelineId;
+
+    public LinkableDto() {
+        this.inboundLinkIds = new HashSet<>();
+        this.outboundLinkIds = new HashSet<>();
+    }
 
     public void addInboundLinkId(UUID linkId) {
         this.inboundLinkIds.add(linkId);
