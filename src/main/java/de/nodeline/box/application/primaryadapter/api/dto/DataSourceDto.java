@@ -16,23 +16,18 @@ public class DataSourceDto {
     @JsonProperty("id")
     @JsonSetter(nulls = Nulls.FAIL) // FAIL setting if the value is null
     private UUID id;
-    @JsonProperty("pipelineIds")
-    private Set<UUID> pipelineIds;
+    @JsonProperty("pipelineId")
+    private UUID pipelineId;
     @JsonProperty("procurer")
     private ProcurerDto procurer;
     @JsonProperty("outboundLinkIds")
     private Set<UUID> outboundLinkIds;
 
     public DataSourceDto() {
-        pipelineIds = new HashSet<>();
         outboundLinkIds = new HashSet<>();
     }
 
     public void addOutboundLinkId(UUID linkId) {
         this.outboundLinkIds.add(linkId);
-    }
-
-    public void addPipelineId(UUID id) {
-        this.pipelineIds.add(id);
     }
 }

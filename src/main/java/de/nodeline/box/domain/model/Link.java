@@ -18,7 +18,7 @@ import lombok.Setter;
 @Data
 @Validated
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@EqualsAndHashCode
+@EqualsAndHashCode(of={"id", "pipeline"})
 public abstract class Link {
     
     @Id

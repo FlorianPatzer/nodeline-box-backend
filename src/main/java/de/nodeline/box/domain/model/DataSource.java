@@ -20,6 +20,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -34,16 +35,17 @@ import lombok.Setter;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @AllArgsConstructor
 @Validated
-@EqualsAndHashCode(of={"id", "procurer", "out"})
+@EqualsAndHashCode(of={"id", "pipeline"})
 public class DataSource {
     
     @Id    
     @Setter
     private UUID id;
 
-    @ManyToMany(mappedBy = "dataSources") // Reference to the `courses` field in Student
+    @ManyToOne
+    @JoinColumn(name = "pipeline_id", referencedColumnName = "id")
     @Valid
-    private Set<Pipeline> pipelines;
+    private Pipeline pipeline;
 
     @Any
     @AnyKeyJavaClass(UUID.class)
@@ -62,27 +64,12 @@ public class DataSource {
     public DataSource() {
         this.id = UUID.randomUUID();
         this.out = new HashSet<>();
-        this.pipelines = new HashSet<>();
     }
 
     public void addOut(Link outLink) {
         this.out.add(outLink);
+        outLink.setSource(this);
     }
 
-    public void addPipeline(Pipeline pipeline) {
-        /* if(! pipeline.getDataSources().contains(this)) {
-            pipeline.addDataSource(this);
-        } */
-        this.pipelines.add(pipeline);
-    }
-
-    /* public void setPipelines(Set<Pipeline> pipelines) {
-        pipelines.forEach(p -> {
-            if(!p.getDataSources().contains(this)) {
-                p.addDataSource(this);
-            }
-        });
-        this.pipelines = pipelines;
-    } */
 
 }

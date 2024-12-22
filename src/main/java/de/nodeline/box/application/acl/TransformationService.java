@@ -85,7 +85,7 @@ public class TransformationService {
         dto.getOutboundLinkIds().forEach(linkId -> {
             Optional<PeerToPeerConnection> conEntity = peerToPeerRepository.findById(linkId);
             if(conEntity.isPresent()) {
-                entity.addIn(conEntity.get());
+                entity.addOut(conEntity.get());
             }
         });
         return entity;

@@ -37,22 +37,12 @@ public class Pipeline {
     @Valid
     private NodelineBox nodelineBox;
 
-    @ManyToMany
-    @JoinTable(
-        name = "pipeline_data_source", // Join table name
-        joinColumns = @JoinColumn(name = "data_source_id"),
-        inverseJoinColumns = @JoinColumn(name = "pipeline_id")
-    )
+    @OneToMany(mappedBy = "pipeline", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @Setter
     @Valid
     private Set<DataSource> dataSources;
 
-    @ManyToMany
-    @JoinTable(
-        name = "pipeline_data_sink", // Join table name
-        joinColumns = @JoinColumn(name = "data_sink_id"),
-        inverseJoinColumns = @JoinColumn(name = "pipeline_id")
-    )
+    @OneToMany(mappedBy = "pipeline", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @Setter
     @Getter
     @Valid

@@ -20,9 +20,11 @@ import de.nodeline.box.application.acl.DataSourceService;
 import de.nodeline.box.application.acl.DeviceService;
 import de.nodeline.box.application.acl.PeerToPeerConnectionService;
 import de.nodeline.box.application.acl.PipelineService;
+import de.nodeline.box.application.acl.TransformationService;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DeviceDto;
+import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.domain.DataGenerator;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSinkInterface;
@@ -51,6 +53,8 @@ public class PipelineApiTests extends BaseTest {
     private PipelineService pipelineService;
     @Autowired
     private ObjectMapper myObjectMapper;
+    @Autowired
+    private TransformationService transService;
 
     @Test
     public void addAndReadDevice() throws Exception {
@@ -177,7 +181,34 @@ public class PipelineApiTests extends BaseTest {
         trans.addOut(out);
         trans.setJoltSpecification("This is no jolt spec but noone cares");
 
-        String transString = new ObjectMapper().writeValueAsString(trans);
+        
+        String iString;
+        try {
+            iString = myObjectMapper.writeValueAsString(ptpService.toDto((PeerToPeerConnection) in));
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/links")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(iString))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()).andReturn(); 
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        String oString;
+        try {
+            oString = myObjectMapper.writeValueAsString(ptpService.toDto((PeerToPeerConnection) out));
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/links")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(oString))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()).andReturn(); 
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        String transString = myObjectMapper.writeValueAsString(transService.toDto(trans));
 
         MvcResult addTransformationResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/transformations")
         .contentType(MediaType.APPLICATION_JSON)
@@ -185,12 +216,12 @@ public class PipelineApiTests extends BaseTest {
         .andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()).andReturn();
 
-        JoltTransformation transformation = new ObjectMapper().readValue(addTransformationResult.getResponse().getContentAsString(), JoltTransformation.class);
+        LinkableDto transformation = myObjectMapper.readValue(addTransformationResult.getResponse().getContentAsString(), LinkableDto.class);
 
         System.out.println("Created jolt transformation: " + addTransformationResult.getResponse().getContentAsString());
 
-        transformation.getIn().forEach(link -> {
-            try {mockMvc.perform(MockMvcRequestBuilders.get("/api/links/" + link.getId().toString())
+        transformation.getInboundLinkIds().forEach(linkId -> {
+            try {mockMvc.perform(MockMvcRequestBuilders.get("/api/links/" + linkId.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
             } catch (Exception e) {
@@ -198,8 +229,8 @@ public class PipelineApiTests extends BaseTest {
             }
         });
 
-        transformation.getOut().forEach(link -> {
-            try {mockMvc.perform(MockMvcRequestBuilders.get("/api/links/" + link.getId().toString())
+        transformation.getOutboundLinkIds().forEach(linkId -> {
+            try {mockMvc.perform(MockMvcRequestBuilders.get("/api/links/" + linkId.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
             } catch (Exception e) {
@@ -208,14 +239,16 @@ public class PipelineApiTests extends BaseTest {
         });
     }
 
-    /*@Test
+   /*  @Test
     public void addAndLoadPipelineTest() throws Exception {
         Pipeline pip = DataGenerator.generatePipeline();
+
+        // Persist links
 
         // Persist data sources
         pip.getDataSources().forEach(ds -> {
             try {
-                String dsString = new ObjectMapper().writeValueAsString(dataSourceService.toDto(ds));
+                String dsString = myObjectMapper.writeValueAsString(dataSourceService.toDto(ds));
 
                 mockMvc.perform(MockMvcRequestBuilders.post("/api/datasources")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -231,7 +264,7 @@ public class PipelineApiTests extends BaseTest {
         // Persist data sinks
         pip.getDataSinks().forEach(ds -> {
             try {
-                String dsString = new ObjectMapper().writeValueAsString(dataSinkService.toDto(ds));
+                String dsString = myObjectMapper.writeValueAsString(dataSinkService.toDto(ds));
 
                 mockMvc.perform(MockMvcRequestBuilders.post("/api/datasinks")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -244,7 +277,7 @@ public class PipelineApiTests extends BaseTest {
             }
         });
 
-        String pipelineString = new ObjectMapper().writeValueAsString(pip);
+        String pipelineString = myObjectMapper.writeValueAsString(pip);
 
         MvcResult addPipelineResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/pipelines")
         .contentType(MediaType.APPLICATION_JSON)
@@ -252,7 +285,7 @@ public class PipelineApiTests extends BaseTest {
         .andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()).andReturn();
 
-        Pipeline pipeline = new ObjectMapper().readValue(addPipelineResult.getResponse().getContentAsString(), Pipeline.class);
+        Pipeline pipeline = myObjectMapper.readValue(addPipelineResult.getResponse().getContentAsString(), Pipeline.class);
 
         System.out.println("Created pipeline: " + addPipelineResult.getResponse().getContentAsString());
 
@@ -261,7 +294,7 @@ public class PipelineApiTests extends BaseTest {
         pip.getDataSources().forEach(ds -> {
             try {
                 ds.addPipeline(pipeline);
-                String dsString = new ObjectMapper().writeValueAsString(ds);
+                String dsString = myObjectMapper.writeValueAsString(ds);
 
                 mockMvc.perform(MockMvcRequestBuilders.put("/api/datasources/" + ds.getId().toString())
                     .contentType(MediaType.APPLICATION_JSON)

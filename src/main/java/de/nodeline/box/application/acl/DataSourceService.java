@@ -61,13 +61,11 @@ public class DataSourceService {
                 }
             });
         }
-        if(! dto.getPipelineIds().isEmpty()) {
-            dto.getPipelineIds().forEach(pipelineId -> {
-                Optional<Pipeline> pipEntity = pipelineRepository.findById(pipelineId);
-                if(pipEntity.isPresent()) {
-                    entity.addPipeline(pipEntity.get());
-                }
-            });
+        if(dto.getPipelineId() != null) {
+            Optional<Pipeline> pipEntity = pipelineRepository.findById(dto.getPipelineId());
+            if(pipEntity.isPresent()) {
+                entity.setPipeline(pipEntity.get());
+            }
         }
         return entity;
     }
@@ -101,10 +99,8 @@ public class DataSourceService {
                 }
             });
         }
-        if(! entity.getPipelines().isEmpty()) {
-            entity.getPipelines().forEach(pipeline -> {
-                dto.addPipelineId(pipeline.getId());
-            });
+        if(entity.getPipeline() != null) {
+            dto.setPipelineId(entity.getPipeline().getId());
         }
         return dto;
     }

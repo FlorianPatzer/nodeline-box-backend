@@ -21,9 +21,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class JoltTransformation extends Transformation {
 
-    @JsonProperty("jolt-spec")
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)  // Exclude from JSON if absent
-    @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
+    
     private String joltSpecification;
 
     public JoltTransformation() {

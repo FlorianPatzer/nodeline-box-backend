@@ -29,6 +29,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -43,15 +44,16 @@ import lombok.Setter;
 @Table(name="data_sink")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @AllArgsConstructor
-@EqualsAndHashCode(of={"id", "deliverer", "in"})
+@EqualsAndHashCode(of={"id", "pipeline"})
 public class DataSink {
     @Id
     @Setter
     private UUID id;
 
-    @ManyToMany(mappedBy = "dataSinks") // Reference to the `courses` field in Student
+    @ManyToOne
+    @JoinColumn(name = "pipeline_id", referencedColumnName = "id")
     @Valid
-    private Set<Pipeline> pipelines;
+    private Pipeline pipeline;
 
     @Any
     @AnyKeyJavaClass(UUID.class)
@@ -70,27 +72,11 @@ public class DataSink {
     public DataSink() {
         this.id = UUID.randomUUID();
         this.in = new HashSet<>();
-        this.pipelines = new HashSet<>();
     }
 
     public void addIn(PeerToPeerConnection in) {
         this.in.add(in);
+        in.setSink(this);
     }
 
-    
-    public void addPipeline(Pipeline pipeline) {
-        /* if(! pipeline.getDataSinks().contains(this)) {
-            pipeline.addDataSink(this);
-        } */
-        this.pipelines.add(pipeline);
-    }
-
-   /*  public void setPipelines(Set<Pipeline> pipelines) {
-        pipelines.forEach(p -> {
-            if(!p.getDataSinks().contains(this)) {
-                p.addDataSink(this);
-            }
-        });
-        this.pipelines = pipelines;
-    } */
 }

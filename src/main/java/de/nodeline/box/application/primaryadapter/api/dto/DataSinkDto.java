@@ -17,23 +17,18 @@ public class DataSinkDto {
     @JsonProperty("id")
     @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
     private UUID id;
-    @JsonProperty("pipelineIds")
-    private Set<UUID> pipelineIds;
+    @JsonProperty("pipelineId")
+    private UUID pipelineId;
     @JsonProperty("deliverer")
     private DelivererDto deliverer;
     @JsonProperty("inboundLinkIds")
     private Set<UUID> inboundLinkIds;
 
     public DataSinkDto() {
-        pipelineIds = new HashSet<>();
         inboundLinkIds = new HashSet<>();
     }
 
     public void addInboundLinkId(UUID link) {
         this.inboundLinkIds.add(link);
-    }
-
-    public void addPipelineId(UUID id) {
-        this.pipelineIds.add(id);
     }
 }

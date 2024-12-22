@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     property = "type"
 )
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = JoltTransformationAttributesDto.class, name = "JoltTransformationAttributesDto")
+    @JsonSubTypes.Type(value = HttpPostRequestAttributesDto.class, name = "HttpPostRequestAttributesDto")
 })
-public abstract class TransformationAttributesDto extends LinkableAttributesDto {
+public abstract class DelivererAttributesDto {
 
 }
