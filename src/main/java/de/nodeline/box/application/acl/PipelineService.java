@@ -1,8 +1,14 @@
 package de.nodeline.box.application.acl;
 
+import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
+import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
+import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
+import de.nodeline.box.domain.model.DataSink;
+import de.nodeline.box.domain.model.DataSource;
+import de.nodeline.box.domain.model.Linkable;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
 import de.nodeline.box.domain.model.Transformation;
@@ -30,17 +36,40 @@ public class PipelineService {
         Pipeline entity = new Pipeline();
         entity.setId(dto.getId());
         dto.getDataSinks().forEach(dsDto -> {
-            entity.addDataSink(dataSinkService.toEntity(dsDto));
+            DataSink ds = dataSinkService.toEntity(dsDto);
+            ds.setPipeline(entity);
+            entity.addDataSink(ds);
         });
         dto.getDataSources().forEach(dsDto -> {
-            entity.addDataSource(dataSourceService.toEntity(dsDto));
+            DataSource ds = dataSourceService.toEntity(dsDto);
+            ds.setPipeline(entity);
+            entity.addDataSource(ds);
         });
         dto.getLinkables().forEach(linkableDto -> {
             Transformation transEntity = transformationService.toEntity(linkableDto);
+            transEntity.setPipeline(entity);
             entity.addLinkable(transEntity);
         });
-        dto.getLinks().forEach(link -> {
-            PeerToPeerConnection conEntity = peertoPeerConnectionService.toEntity(link);
+        dto.getLinks().forEach(link -> {            
+            PeerToPeerConnection conEntity = new PeerToPeerConnection();
+            conEntity.setId(link.getId());
+            if(link.getSourceLinkableRef() != null) {
+                Linkable linkable = entity.getLinkables().stream().filter(l -> l.getId().equals(link.getSourceLinkableRef().getId())).findFirst().orElse(null);
+                conEntity.setIn(linkable);    
+            }
+            if(link.getTargetLinkableRef() != null) {
+                Linkable linkable = entity.getLinkables().stream().filter(l -> l.getId().equals(link.getTargetLinkableRef().getId())).findFirst().orElse(null);
+                conEntity.setOut(linkable);    
+            }
+            if(link.getSinkId() != null) {
+                DataSink sink = entity.getDataSinks().stream().filter(s -> s.getId().equals(link.getSinkId())).findFirst().orElse(null);
+                conEntity.setSink(sink);
+            }
+            if(link.getSourceId() != null) {
+                DataSource source = entity.getDataSources().stream().filter(s -> s.getId().equals(link.getSourceId())).findFirst().orElse(null);
+                conEntity.setSource(source);
+            }
+            conEntity.setPipeline(entity);
             entity.addLink(conEntity);
         });
         return entity;
@@ -49,18 +78,25 @@ public class PipelineService {
     public PipelineDto toDto(Pipeline entity) {
         PipelineDto dto = new PipelineDto();
         dto.setId(entity.getId());
-        entity.getDataSinks().forEach(ds -> {                
-            dto.addDataSink(dataSinkService.toDto(ds));
+        entity.getDataSinks().forEach(ds -> {
+            DataSinkDto dsDto = dataSinkService.toDto(ds);
+            dsDto.setPipelineId(entity.getId());
+            dto.addDataSink(dsDto);
         });
         entity.getDataSources().forEach(ds -> {
+            DataSourceDto dsDto = dataSourceService.toDto(ds);
+            dsDto.setPipelineId(entity.getId());
             dto.addDataSource(dataSourceService.toDto(ds));
         });
         entity.getLinks().forEach(link -> {
             PeerToPeerDto ptpDto = peertoPeerConnectionService.toDto((PeerToPeerConnection) link);
+            ptpDto.setPipelineId(entity.getId());
             dto.addLink(ptpDto);
         });
         entity.getLinkables().forEach(linkable -> {
-            dto.addLinkable(transformationService.toDto((Transformation) linkable));
+            LinkableDto transDto = transformationService.toDto((Transformation) linkable);
+            transDto.setPipelineId(entity.getId());
+            dto.addLinkable(transDto);
         });
         return dto;
     }

@@ -1,5 +1,6 @@
 package de.nodeline.box.domain.model;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
-@EqualsAndHashCode(of={"id", "nodelineBox", "linkables", "links"})
+@EqualsAndHashCode(of={"id", "nodelineBox"})
 @Validated
 @Data
 public class Pipeline {
@@ -62,6 +63,10 @@ public class Pipeline {
 
     public Pipeline() {
         this.id = UUID.randomUUID();
+        this.dataSinks = new HashSet<>();
+        this.dataSources = new HashSet<>();
+        this.linkables = new HashSet<>();
+        this.links = new HashSet<>();
     }
 
     public void addDataSource(DataSource dataSource) {

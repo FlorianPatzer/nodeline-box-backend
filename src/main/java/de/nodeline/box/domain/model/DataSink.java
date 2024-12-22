@@ -75,8 +75,8 @@ public class DataSink {
     }
 
     public void addIn(PeerToPeerConnection in) {
+        // in.setSink(this);
         this.in.add(in);
-        in.setSink(this);
     }
 
 }

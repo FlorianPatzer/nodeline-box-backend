@@ -43,11 +43,11 @@ public abstract class Linkable {
     }
 
     public void addIn(Link in) {
+        // in.setOut(this);
         this.in.add(in);
-        in.setOut(this);
     }
     public void addOut(Link out) {
+        // out.setIn(this);
         this.out.add(out);
-        out.setIn(this);
     }
 }

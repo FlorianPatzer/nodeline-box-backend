@@ -67,8 +67,8 @@ public class DataSource {
     }
 
     public void addOut(Link outLink) {
+        // outLink.setSource(this);
         this.out.add(outLink);
-        outLink.setSource(this);
     }
 
 
