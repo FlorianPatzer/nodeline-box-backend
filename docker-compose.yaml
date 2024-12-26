@@ -25,3 +25,11 @@ services:
     restart: always
     ports:
       - 8181:8080
+  
+  box:
+    image: box:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - 8111:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/nodeline-box-persistence

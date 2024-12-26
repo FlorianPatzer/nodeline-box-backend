@@ -3,15 +3,12 @@ package de.nodeline.box.application;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.nodeline.box.BaseTest;
@@ -28,7 +25,6 @@ import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
 import de.nodeline.box.domain.DataGenerator;
 import de.nodeline.box.domain.model.DataSink;
-import de.nodeline.box.domain.model.DataSinkInterface;
 import de.nodeline.box.domain.model.DataSource;
 import de.nodeline.box.domain.model.Device;
 import de.nodeline.box.domain.model.Endpoint;
