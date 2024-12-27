@@ -1,6 +1,6 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.application.acl.DeviceService;
+import de.nodeline.box.application.acl.api.DeviceService;
 import de.nodeline.box.application.primaryadapter.api.dto.DeviceDto;
 
 import org.springframework.beans.factory.annotation.Autowired;

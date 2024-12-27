@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import de.nodeline.box.application.acl.TransformationService;
+import de.nodeline.box.application.acl.api.TransformationService;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 
 import java.util.List;

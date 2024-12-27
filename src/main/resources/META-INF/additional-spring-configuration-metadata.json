@@ -1,0 +1,10 @@
+{"properties": [{
+  "name": "nifi.api.url",
+  "type": "java.lang.String",
+  "description": "The url of the nifi api"
+},
+{
+    "name": "nifi.api.token",
+    "type": "java.lang.String",
+    "description": "The bearer token for the nifi api"
+  }]}

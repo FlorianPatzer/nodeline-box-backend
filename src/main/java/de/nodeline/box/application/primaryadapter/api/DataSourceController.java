@@ -1,6 +1,6 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.application.acl.DataSourceService;
+import de.nodeline.box.application.acl.api.DataSourceService;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

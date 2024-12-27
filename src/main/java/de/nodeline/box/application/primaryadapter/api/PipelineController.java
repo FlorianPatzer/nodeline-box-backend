@@ -1,6 +1,6 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.application.acl.PipelineService;
+import de.nodeline.box.application.acl.api.PipelineService;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.application.acl.PeerToPeerConnectionService;
+import de.nodeline.box.application.acl.api.PeerToPeerConnectionService;
 import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
 
 import org.springframework.beans.factory.annotation.Autowired;

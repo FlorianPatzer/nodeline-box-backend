@@ -1,4 +1,4 @@
-package de.nodeline.box.application.acl;
+package de.nodeline.box.application.acl.api;
 
 import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;

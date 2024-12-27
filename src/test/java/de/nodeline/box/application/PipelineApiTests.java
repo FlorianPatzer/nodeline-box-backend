@@ -12,12 +12,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.nodeline.box.BaseTest;
-import de.nodeline.box.application.acl.DataSinkService;
-import de.nodeline.box.application.acl.DataSourceService;
-import de.nodeline.box.application.acl.DeviceService;
-import de.nodeline.box.application.acl.PeerToPeerConnectionService;
-import de.nodeline.box.application.acl.PipelineService;
-import de.nodeline.box.application.acl.TransformationService;
+import de.nodeline.box.application.acl.api.DataSinkService;
+import de.nodeline.box.application.acl.api.DataSourceService;
+import de.nodeline.box.application.acl.api.DeviceService;
+import de.nodeline.box.application.acl.api.PeerToPeerConnectionService;
+import de.nodeline.box.application.acl.api.PipelineService;
+import de.nodeline.box.application.acl.api.TransformationService;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DeviceDto;

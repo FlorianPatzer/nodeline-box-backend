@@ -1,7 +1,7 @@
 package de.nodeline.box.application.primaryadapter.api;
 
 
-import de.nodeline.box.application.acl.EndpointService;
+import de.nodeline.box.application.acl.api.EndpointService;
 import de.nodeline.box.application.primaryadapter.api.dto.EndpointDto;
 
 import org.springframework.beans.factory.annotation.Autowired;

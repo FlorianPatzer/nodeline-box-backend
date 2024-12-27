@@ -1,6 +1,6 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.application.acl.DataSinkService;
+import de.nodeline.box.application.acl.api.DataSinkService;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
