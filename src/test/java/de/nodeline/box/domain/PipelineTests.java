@@ -12,7 +12,8 @@ import de.nodeline.box.domain.model.Pipeline;
 public class PipelineTests {
     @Test
     public void basicTest1() {
-        Pipeline p = DataGenerator.generatePipeline();
+        Pipeline p = new Pipeline();
+        p = DataGenerator.generatePipeline(p);
 
         assertTrue(p.getDataSinks().size() == 1);
         assertTrue(p.getDataSources().size() == 1);

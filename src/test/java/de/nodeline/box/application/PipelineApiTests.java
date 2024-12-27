@@ -80,8 +80,12 @@ public class PipelineApiTests extends BaseTest {
 
     @Test
     public void addAndReadDataSource() throws Exception {
+        Pipeline pip = createEmptyPipeline();
+
         DataSource ds = new DataSource();
+        ds.setPipeline(pip);
         PeerToPeerConnection out = new PeerToPeerConnection();
+        out.setPipeline(pip);
         ds.addOut(out);
         HttpGetRequest procurer = new HttpGetRequest();
         procurer.setUrl("testurl");
@@ -126,11 +130,15 @@ public class PipelineApiTests extends BaseTest {
 
     @Test
     public void addAndReadDataSink() throws Exception {
+        Pipeline pip = createEmptyPipeline();
+
         DataSink ds = new DataSink();
+        ds.setPipeline(pip);
         HttpPostRequest deliverer = new HttpPostRequest();
         deliverer.setUrl("testurl");
         ds.setDeliverer(deliverer);
         PeerToPeerConnection in = new PeerToPeerConnection();
+        in.setPipeline(pip);
         ds.addIn(in);
 
         ds.getIn().forEach(i -> {
@@ -171,9 +179,14 @@ public class PipelineApiTests extends BaseTest {
 
     @Test
     public void addAndLoadJoltTransformation() throws Exception {
-        JoltTransformation trans = new JoltTransformation();        
+        Pipeline pip = createEmptyPipeline();
+
+        JoltTransformation trans = new JoltTransformation();
+        trans.setPipeline(pip);        
         PeerToPeerConnection in = new PeerToPeerConnection();
+        in.setPipeline(pip);
         PeerToPeerConnection out = new PeerToPeerConnection();
+        out.setPipeline(pip);
         trans.addIn(in);
         trans.addOut(out);
         trans.setJoltSpecification("This is no jolt spec but noone cares");
@@ -238,15 +251,17 @@ public class PipelineApiTests extends BaseTest {
 
     @Test
     public void addAndLoadPipelineTest() throws Exception {
-        Pipeline pip = DataGenerator.generatePipeline();       
+        Pipeline pip = createEmptyPipeline();
+       
+        pip = DataGenerator.generatePipeline(pip);       
 
         String pipelineString = myObjectMapper.writeValueAsString(pipelineService.toDto(pip));
 
         MvcResult addPipelineResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/pipelines")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(pipelineString))
-        .andExpect(MockMvcResultMatchers.status().isCreated())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()).andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(pipelineString))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()).andReturn();
 
         PipelineDto pipeline = myObjectMapper.readValue(addPipelineResult.getResponse().getContentAsString(), PipelineDto.class);
 
@@ -258,5 +273,19 @@ public class PipelineApiTests extends BaseTest {
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
         System.out.println("Pipeline with linkage: " + persistedPipeline.getResponse().getContentAsString());      
+    }
+
+    public Pipeline createEmptyPipeline() throws Exception {
+        Pipeline pip = new Pipeline();
+
+        
+        String pipelineString = myObjectMapper.writeValueAsString(pipelineService.toDto(pip));
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/pipelines")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(pipelineString))
+        .andExpect(MockMvcResultMatchers.status().isCreated())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+
+        return pip;
     }
 }

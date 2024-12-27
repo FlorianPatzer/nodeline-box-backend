@@ -72,7 +72,11 @@ public class PeerToPeerConnectionService {
             Optional<Pipeline> pipEntity = pipelineRepository.findById(dto.getPipelineId());
             if(pipEntity.isPresent()) {
                 entity.setPipeline(pipEntity.get());
+            } else {                
+                throw new IllegalArgumentException("No pipeline found with id" + dto.getPipelineId());
             }
+        } else {
+            throw new IllegalArgumentException("Pipeline id required for connection " + dto.getId());
         }
         return entity;
     }
