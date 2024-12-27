@@ -70,18 +70,22 @@ public class Pipeline {
     }
 
     public void addDataSource(DataSource dataSource) {
+        dataSource.setPipeline(this);
         this.dataSources.add(dataSource);
     }
 
     public void addDataSink(DataSink dataSink) {
+        dataSink.setPipeline(this);
         this.dataSinks.add(dataSink);
     }
 
     public void addLinkable(Linkable linkable) {
+        linkable.setPipeline(this);
         this.linkables.add(linkable);
     }
 
     public void addLink(Link link) {
+        link.setPipeline(this);
         this.links.add(link);
     }
     

@@ -9,8 +9,7 @@ import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
 
 public class DataGenerator {
-    public static Pipeline generatePipeline() {
-        Pipeline p = new Pipeline();       
+    public static Pipeline generatePipeline(Pipeline p) {     
         JoltTransformation jTran1 = new JoltTransformation();
         JoltTransformation jTran2 = new JoltTransformation();
 

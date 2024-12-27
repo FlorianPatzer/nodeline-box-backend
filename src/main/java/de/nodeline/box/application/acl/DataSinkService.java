@@ -65,7 +65,11 @@ public class DataSinkService {
             Optional<Pipeline> pipEntity = pipelineRepository.findById(dto.getPipelineId());
             if(pipEntity.isPresent()) {
                 entity.setPipeline(pipEntity.get());
+            } else {                
+                throw new IllegalArgumentException("No pipeline found with id" + dto.getPipelineId());
             }
+        } else {
+            throw new IllegalArgumentException("Pipeline id required for data sink " + dto.getId());
         }
         return entity;
     }

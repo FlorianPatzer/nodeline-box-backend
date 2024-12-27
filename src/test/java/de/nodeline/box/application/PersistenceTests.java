@@ -38,7 +38,9 @@ public class PersistenceTests extends BaseTest {
 
     @Test
     void saveAndLoad() {
-        Pipeline p = DataGenerator.generatePipeline();
+        Pipeline p = new Pipeline();
+        pipRepo.save(p);
+        p = DataGenerator.generatePipeline(p);
         
         for (DataSource ds : p.getDataSources()) {
             procurerRepo.save((HttpGetRequest) ds.getProcurer());
