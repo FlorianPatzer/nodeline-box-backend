@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import de.nodeline.box.BaseTest;
+import de.nodeline.box.application.primaryadapter.nifi.NiFiService;
 import de.nodeline.box.application.secondaryadapter.DataSinkRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.DataSourceRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.HttpGetRequestRepositoryInterface;
@@ -35,6 +37,8 @@ public class PersistenceTests extends BaseTest {
     private HttpGetRequestRepositoryInterface procurerRepo;
     @Autowired
     private HttpPostRequestRepositoryInterface delivererRepo;
+    @MockBean
+    private NiFiService niFiService;
 
     @Test
     void saveAndLoad() {

@@ -18,3 +18,10 @@ Run tests with `mvnw clean test -f pom.xml` and adjust paths for `mvnw` and `pom
 Nifi api is accessible via `https://localhost:8443/nifi-api/access/token?username=admin&password=ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB` to get the token. API spec is available [here](https://nifi.apache.org/docs/nifi-docs/rest-api/index.html).
 
 Access to process groups is performed via extracting the root process node id using `/nifi-api/process-groups/root`
+
+## Known Issues
+Since introducing the nifi service classes, the cleanup after the tests fails with
+```
+[ERROR] Surefire is going to kill self fork JVM. The exit has elapsed 30 seconds after System.exit(0).
+```
+This could not be solved yet. However, the tests work fine.

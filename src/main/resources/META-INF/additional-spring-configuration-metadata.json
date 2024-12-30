@@ -1,10 +1,27 @@
-{"properties": [{
-  "name": "nifi.api.url",
-  "type": "java.lang.String",
-  "description": "The url of the nifi api"
-},
-{
-    "name": "nifi.api.token",
+{"properties": [
+  {
+    "name": "nifi.api.url",
     "type": "java.lang.String",
-    "description": "The bearer token for the nifi api"
-  }]}
+    "description": "The url of the nifi api"
+  },
+  {
+    "name": "nifi.api.clientKeystorePath",
+    "type": "java.lang.String",
+    "description": "The keystore location for the backend"
+  },
+  {
+    "name": "nifi.api.clientTruststorePath",
+    "type": "java.lang.String",
+    "description": "The truststore location for the backend"
+  },
+  {
+    "name": "nifi.api.clientKeystorePassword",
+    "type": "java.lang.String",
+    "description": "The keystore password for the backend'"
+  },
+  {
+    "name": "nifi.api.clientTruststorePassword",
+    "type": "java.lang.String",
+    "description": "The truststore password for the backend'"
+  }
+]}

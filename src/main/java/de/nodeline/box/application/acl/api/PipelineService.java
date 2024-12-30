@@ -1,5 +1,6 @@
 package de.nodeline.box.application.acl.api;
 
+import de.nodeline.box.application.acl.nifi.NifiWorkflowEngineService;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
@@ -31,6 +32,8 @@ public class PipelineService {
     private DataSinkService dataSinkService;
     @Autowired
     private DataSourceService dataSourceService;
+    @Autowired
+    private NifiWorkflowEngineService workflowEngineService;
 
     public Pipeline toEntity(PipelineDto dto) {
         Pipeline entity = new Pipeline();
@@ -110,7 +113,9 @@ public class PipelineService {
     }
 
     public PipelineDto createPipeline(PipelineDto pipeline) {
-        return this.toDto(pipelineRepository.save(this.toEntity(pipeline)));
+        Pipeline pipelineEntity = this.toEntity(pipeline);
+        workflowEngineService.createPipeline(pipelineEntity);
+        return this.toDto(pipelineRepository.save(pipelineEntity));
     }
 
     public Optional<PipelineDto> updatePipeline(UUID id, PipelineDto pipeline) {
