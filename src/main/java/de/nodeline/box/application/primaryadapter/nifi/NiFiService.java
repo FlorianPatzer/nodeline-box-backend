@@ -12,13 +12,17 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionDTO;
 import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessGroupDTO;
+import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessGroupEntity;
 import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessorDTO;
+import de.nodeline.box.application.primaryadapter.nifi.dto.RevisionDTO;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.client.HttpClient;
@@ -31,14 +35,6 @@ public class NiFiService {
     private final ProcessGroupDTO rootProcessGroup;
 
     public NiFiService(WebClient.Builder webClientBuilder, @Value("${nifi.api.url}") String baseUrl, @Value("${nifi.api.clientKeystorePath}") String keystorePath, @Value("${nifi.api.clientKeystorePassword}") String keystorePassword, @Value("${nifi.api.clientTruststorePath}") String truststorePath, @Value("${nifi.api.clientTruststorePassword}") String truststorePassword) throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, CertificateException, IOException {
-        /* // Load SSL Context
-        SslContext sslContext = SslContextBuilder.forClient()
-                .trustManager(new File("src/main/resources/nifi-certificate.pem")) // Trust server's certificate
-                .sslProvider(SslProvider.JDK)  // Use OpenSSL provider
-                .clientAuth(ClientAuth.REQUIRE)  // Optional: No client-side authentication
-                .build(); */
-
-
         // Load the KeyStore (client certificate and private key)
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         try (FileInputStream keyStoreFile = new FileInputStream(keystorePath)) {
@@ -82,14 +78,22 @@ public class NiFiService {
     }
 
     // Create a new process group
-    public ProcessGroupDTO createProcessGroup(ProcessGroupDTO processGroupDTO) {        
+    public ResponseEntity<ProcessGroupEntity> createProcessGroup(ProcessGroupDTO processGroupDTO) {        
         processGroupDTO.setParentGroupId(this.rootProcessGroup.getId());
-        return webClient.post()
-            .uri("/process-groups/{parentGroupId}/process-groups", this.rootProcessGroup.getId())
-            .bodyValue(processGroupDTO)
-            .retrieve()
-            .bodyToMono(ProcessGroupDTO.class)
-            .block();
+        RevisionDTO revision = new RevisionDTO();
+        revision.setVersion(0);
+        ProcessGroupEntity entity = new ProcessGroupEntity(revision, processGroupDTO);
+        ResponseEntity<ProcessGroupEntity> response = webClient.post()
+                    .uri("/process-groups/{parentGroupId}/process-groups", this.rootProcessGroup.getId())
+                    .bodyValue(entity)
+                    // .exchangeToMono(response -> {
+                    //     System.out.println("Response status: " + response.statusCode());
+                    //     return response.bodyToMono(ProcessGroupEntity.class);
+                    // })
+                    .retrieve()
+                    .toEntity(ProcessGroupEntity.class)
+                    .block();
+        return response;
     }
 
     // Create a new processor
@@ -122,15 +126,17 @@ public class NiFiService {
     }
 
     // Delete a process group
-    public void deleteProcessGroup(String processGroupId, String version) {
-        webClient.delete()
+    public HttpStatusCode deleteProcessGroup(String processGroupId, String version) {
+        ResponseEntity<String> response = webClient.delete()
             .uri(uriBuilder -> uriBuilder
                 .path("/process-groups/{processGroupId}")
                 .queryParam("version", version)
+                .queryParam("disconnectedNodeAcknowledged", false)
                 .build(processGroupId))
             .retrieve()
-            .bodyToMono(Void.class)
+            .toEntity(String.class)
             .block();
+        return response.getStatusCode();
     }
 }
 

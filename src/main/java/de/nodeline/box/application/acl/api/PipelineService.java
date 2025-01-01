@@ -14,8 +14,12 @@ import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
 import de.nodeline.box.domain.model.Transformation;
 
+import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.ErrorResponseException;
 
 import java.util.*;
 
@@ -114,7 +118,9 @@ public class PipelineService {
 
     public PipelineDto createPipeline(PipelineDto pipeline) {
         Pipeline pipelineEntity = this.toEntity(pipeline);
-        workflowEngineService.createPipeline(pipelineEntity);
+        if(!workflowEngineService.createPipeline(pipelineEntity)) {
+            throw new RuntimeException("Unable to persist representative for pipeline " + pipeline.getId().toString());
+        }
         return this.toDto(pipelineRepository.save(pipelineEntity));
     }
 
@@ -128,6 +134,10 @@ public class PipelineService {
 
     public boolean deletePipeline(UUID id) {
         if(pipelineRepository.existsById(id)) {
+            // TODO: Probably not the most performant way to do this:
+            if(!workflowEngineService.deletePipeline(id)) {
+                throw new RuntimeException("Unable to delete representative for pipeline " + id);
+            }
             pipelineRepository.deleteById(id);
             return true;
         }

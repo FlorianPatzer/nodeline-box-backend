@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -28,7 +31,6 @@ import de.nodeline.box.application.primaryadapter.api.dto.DeviceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
 import de.nodeline.box.application.primaryadapter.nifi.NiFiService;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessGroupDTO;
 import de.nodeline.box.domain.DataGenerator;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;
@@ -65,7 +67,7 @@ public class PipelineApiTests extends BaseTest {
 
     @Test
     public void addAndReadDevice() throws Exception {
-        when(niFiService.createProcessGroup(any())).thenReturn((new ProcessGroupDTO()));
+        when(niFiService.createProcessGroup(any())).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
         Device dev = new Device();
         dev.addEndpoint(new Endpoint());
         MvcResult addDeviceResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/devices")
@@ -91,7 +93,7 @@ public class PipelineApiTests extends BaseTest {
 
     @Test
     public void addAndReadDataSource() throws Exception {
-        when(niFiService.createProcessGroup(any())).thenReturn((new ProcessGroupDTO()));
+        when(niFiService.createProcessGroup(any())).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
         Pipeline pip = createEmptyPipeline();
 
         DataSource ds = new DataSource();
@@ -142,7 +144,7 @@ public class PipelineApiTests extends BaseTest {
 
     @Test
     public void addAndReadDataSink() throws Exception {
-        when(niFiService.createProcessGroup(any())).thenReturn((new ProcessGroupDTO()));
+        when(niFiService.createProcessGroup(any())).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
         Pipeline pip = createEmptyPipeline();
 
         DataSink ds = new DataSink();
@@ -192,7 +194,7 @@ public class PipelineApiTests extends BaseTest {
 
     @Test
     public void addAndLoadJoltTransformation() throws Exception {
-        when(niFiService.createProcessGroup(any())).thenReturn((new ProcessGroupDTO()));
+        when(niFiService.createProcessGroup(any())).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
         Pipeline pip = createEmptyPipeline();
 
         JoltTransformation trans = new JoltTransformation();
@@ -265,7 +267,7 @@ public class PipelineApiTests extends BaseTest {
 
     @Test
     public void addAndLoadPipelineTest() throws Exception {
-        when(niFiService.createProcessGroup(any())).thenReturn((new ProcessGroupDTO()));
+        when(niFiService.createProcessGroup(any())).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
         Pipeline pip = createEmptyPipeline();
        
         pip = DataGenerator.generatePipeline(pip);       

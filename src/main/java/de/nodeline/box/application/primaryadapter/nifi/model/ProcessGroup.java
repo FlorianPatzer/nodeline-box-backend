@@ -1,22 +1,24 @@
 package de.nodeline.box.application.primaryadapter.nifi.model;
 
+
 import java.util.UUID;
 
-import de.nodeline.box.domain.model.Pipeline;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="process_group")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class ProcessGroup {
     @Id
-    @Setter
-    private UUID id;
- 
-    @OneToOne
-    Pipeline pipeline;
+    private String id; 
+    UUID pipelineId;
+    String version;
 
 }
