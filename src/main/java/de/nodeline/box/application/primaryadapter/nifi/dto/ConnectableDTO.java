@@ -1,6 +1,5 @@
 package de.nodeline.box.application.primaryadapter.nifi.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -11,12 +10,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProcessorDTO {
+public class ConnectableDTO {    
     private String id;
-    private String name;
-    private String type;
-    private BundleDTO bundle;
-    private PositionDTO position;
-    private ConfigDTO config;
+    private Type type;
+    private String groupId;
 
+    public enum Type {
+        PROCESSOR,
+        // REMOTE_INPUT_PORT,
+        // REMOTE_OUTPUT_PORT,
+        // INPUT_PORT,
+        // OUTPUT_PORT,FUNNEL
+    }
 }

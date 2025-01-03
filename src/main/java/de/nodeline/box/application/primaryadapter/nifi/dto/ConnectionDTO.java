@@ -1,5 +1,9 @@
 package de.nodeline.box.application.primaryadapter.nifi.dto;
 
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,13 +11,20 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ConnectionDTO {
     private String id;
     private String name;
-    private String sourceId;
-    private String sourceType;
-    private String destinationId;
-    private String destinationType;
-    private PositionDTO position;
+    private ConnectableDTO source;
+    private ConnectableDTO destination;
+    private Set<Relationship> selectedRelationships;
+
+    public enum Relationship {
+        Response
+    }
+
+    public void addRelationship(Relationship relationship) {
+        selectedRelationships.add(relationship);
+    }
 }
 

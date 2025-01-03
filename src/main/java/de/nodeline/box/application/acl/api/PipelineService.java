@@ -61,8 +61,8 @@ public class PipelineService {
             PeerToPeerConnection conEntity = new PeerToPeerConnection();
             conEntity.setId(link.getId());
             if(link.getSourceLinkableRef() != null) {
-                Linkable linkable = entity.getLinkables().stream().filter(l -> l.getId().equals(link.getSourceLinkableRef().getId())).findFirst().orElse(null);
-                conEntity.setIn(linkable);    
+                Linkable linkable = entity.getLinkables().stream().filter(l -> l.getId().equals(link.getSourceLinkableRef().getId())).findFirst().orElse(null); 
+                conEntity.setIn(linkable);  
             }
             if(link.getTargetLinkableRef() != null) {
                 Linkable linkable = entity.getLinkables().stream().filter(l -> l.getId().equals(link.getTargetLinkableRef().getId())).findFirst().orElse(null);

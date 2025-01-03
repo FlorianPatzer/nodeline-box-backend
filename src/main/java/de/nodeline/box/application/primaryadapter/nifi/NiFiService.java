@@ -18,10 +18,15 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionDTO;
+import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionEntity;
 import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessGroupDTO;
 import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessGroupEntity;
 import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessorDTO;
+import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessorEntity;
 import de.nodeline.box.application.primaryadapter.nifi.dto.RevisionDTO;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -86,10 +91,6 @@ public class NiFiService {
         ResponseEntity<ProcessGroupEntity> response = webClient.post()
                     .uri("/process-groups/{parentGroupId}/process-groups", this.rootProcessGroup.getId())
                     .bodyValue(entity)
-                    // .exchangeToMono(response -> {
-                    //     System.out.println("Response status: " + response.statusCode());
-                    //     return response.bodyToMono(ProcessGroupEntity.class);
-                    // })
                     .retrieve()
                     .toEntity(ProcessGroupEntity.class)
                     .block();
@@ -97,23 +98,34 @@ public class NiFiService {
     }
 
     // Create a new processor
-    public ProcessorDTO createProcessor(String processGroupId, ProcessorDTO processorDTO) {
-        return webClient.post()
+    public ResponseEntity<ProcessorEntity> createProcessor(String processGroupId, ProcessorDTO processorDTO) {
+        ProcessorEntity entity = new ProcessorEntity(new RevisionDTO(null, 0, null), processorDTO);
+        ResponseEntity<ProcessorEntity> response = webClient.post()
             .uri("/process-groups/{processGroupId}/processors", processGroupId)
-            .bodyValue(processorDTO)
+            .bodyValue(entity)
             .retrieve()
-            .bodyToMono(ProcessorDTO.class)
+            .toEntity(ProcessorEntity.class)
             .block();
+        return response;
     }
 
     // Create a connection between processors
-    public ConnectionDTO createConnection(String processGroupId, ConnectionDTO connectionDTO) {
-        return webClient.post()
+    public ResponseEntity<ConnectionEntity> createConnection(String processGroupId, ConnectionDTO connectionDTO) {
+        ConnectionEntity entity = new ConnectionEntity(new RevisionDTO(null, 0, null), connectionDTO);
+        ObjectMapper om = new ObjectMapper();
+        try {
+            System.out.println(om.writeValueAsString(entity));
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        ResponseEntity<ConnectionEntity> response = webClient.post()
             .uri("/process-groups/{processGroupId}/connections", processGroupId)
-            .bodyValue(connectionDTO)
+            .bodyValue(entity)
             .retrieve()
-            .bodyToMono(ConnectionDTO.class)
+            .toEntity(ConnectionEntity.class)
             .block();
+        return response;
     }
 
     // Get details of a process group
