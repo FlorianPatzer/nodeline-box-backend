@@ -1,4 +1,4 @@
-package de.nodeline.box.application.primaryadapter.nifi.dto;
+package de.nodeline.box.application.secondaryadapter.nifi.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProcessorEntity {
+public class ConnectionEntity {
     private RevisionDTO revision;
-    private ProcessorDTO component;
+    private ConnectionDTO component;
 }

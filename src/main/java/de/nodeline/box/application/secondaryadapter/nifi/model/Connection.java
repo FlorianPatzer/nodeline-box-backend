@@ -1,4 +1,4 @@
-package de.nodeline.box.application.primaryadapter.nifi.model;
+package de.nodeline.box.application.secondaryadapter.nifi.model;
 
 import java.util.UUID;
 

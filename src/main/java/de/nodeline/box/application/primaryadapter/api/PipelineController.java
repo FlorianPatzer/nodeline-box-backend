@@ -49,12 +49,20 @@ public class PipelineController {
      * Create a new pipeline
      *
      * @param pipeline Pipeline object from the request body
-     * @return Created pipeline
+     * @return Created pipeline or 422 if creation failed
      */
     @PostMapping
     public ResponseEntity<PipelineDto> createPipeline(@RequestBody PipelineDto pipeline) {
-        PipelineDto createdPipeline = pipelineService.createPipeline(pipeline);
-        return ResponseEntity.status(201).body(createdPipeline);
+        if (pipeline.getId() != null) {
+            return ResponseEntity.badRequest().build();
+            
+        }
+        Optional<PipelineDto> createdPipeline = pipelineService.createPipeline(pipeline);
+        if(createdPipeline.isEmpty()) {
+            return ResponseEntity.unprocessableEntity().build();
+        } else {
+            return ResponseEntity.status(201).body(createdPipeline.get());
+        }
     }
 
     /**
@@ -84,7 +92,7 @@ public class PipelineController {
     public ResponseEntity<Void> deletePipeline(@PathVariable UUID id) {
         boolean deleted = pipelineService.deletePipeline(id);
         if (deleted) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }

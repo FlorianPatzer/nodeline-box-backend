@@ -60,6 +60,8 @@ public class Pipeline {
     @Getter    
     @Valid
     private Set<Link> links;
+    
+    private PipelineStatus status;
 
     public Pipeline() {
         this.id = UUID.randomUUID();

@@ -10,26 +10,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import de.nodeline.box.application.acl.WorkflowEngineService;
-import de.nodeline.box.application.primaryadapter.nifi.NiFiService;
-import de.nodeline.box.application.primaryadapter.nifi.NifiTransformationService;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectableDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionEntity;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessGroupDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessGroupEntity;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessorDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessorEntity;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionDTO.Relationship;
-import de.nodeline.box.application.primaryadapter.nifi.model.Connection;
-import de.nodeline.box.application.primaryadapter.nifi.model.ProcessGroup;
-import de.nodeline.box.application.primaryadapter.nifi.model.Processor;
+import de.nodeline.box.application.secondaryadapter.nifi.NiFiService;
+import de.nodeline.box.application.secondaryadapter.nifi.NifiTransformationService;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ConnectionDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ConnectionEntity;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessGroupDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessGroupEntity;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorEntity;
+import de.nodeline.box.application.secondaryadapter.nifi.model.Connection;
+import de.nodeline.box.application.secondaryadapter.nifi.model.ProcessGroup;
+import de.nodeline.box.application.secondaryadapter.nifi.model.Processor;
 import de.nodeline.box.application.secondaryadapter.NifiProcessGroupRepositoryInterface;
+import de.nodeline.box.domain.model.EngineFlowStatus;
 import de.nodeline.box.domain.model.Link;
 import de.nodeline.box.domain.model.Pipeline;
-import io.netty.handler.codec.http2.Http2Exception;
+import de.nodeline.box.domain.port.WorkflowEngine.EngineResponse;
+import de.nodeline.box.domain.port.WorkflowEngine.WorkflowEngineService;
 
 @Service
 public class NifiWorkflowEngineService implements WorkflowEngineService {
@@ -41,17 +38,17 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
     private NifiTransformationService transformationService;
 
     @Override
-    public boolean createPipeline(Pipeline pipeline) {
+    public EngineResponse createFlow(Pipeline pipeline) {        
         ProcessGroupDTO pgDto = new ProcessGroupDTO();
         pgDto.setId(null);
         pgDto.setName(pipeline.getId().toString());
         pgDto.setComments("Process Group for nodeline box pipeline " + pipeline.getId().toString());
         pgDto.setPosition(null);
-         ResponseEntity<ProcessGroupEntity> response = niFiService.createProcessGroup(pgDto);
+        ResponseEntity<ProcessGroupEntity> response = niFiService.createProcessGroup(pgDto);
         if(response.getStatusCode() == HttpStatus.CREATED) {
             String nifiProcessGroupId = response.getBody().getComponent().getId();
             String nifiProcessGroupVersion = String.valueOf(response.getBody().getRevision().getVersion());
-            ProcessGroup pgEntity = new ProcessGroup(nifiProcessGroupId, pipeline.getId(), nifiProcessGroupVersion, new HashSet<>(), new HashSet<>());
+            ProcessGroup pgEntity = new ProcessGroup(nifiProcessGroupId, pipeline.getId(), nifiProcessGroupVersion, EngineFlowStatus.STOPPED, new HashSet<>(), new HashSet<>());
             pipeline.getLinkables().forEach(linkable -> {
                 ProcessorDTO processorDTO = transformationService.linkableToProcessorDTO(linkable);
                 pgEntity.addProcessor(createProcessor(pgEntity, processorDTO, linkable.getId()));
@@ -74,9 +71,9 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
                 pgEntity.addConnection(createConnection(pgEntity, connectionDTO, link.getId()));
             });
             pgRepo.save(pgEntity);
-            return true;
+            return new EngineResponse(EngineFlowStatus.STOPPED);
         }
-        return false;
+        return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, response.getBody().toString());
     }
 
     private Connection createConnection(ProcessGroup processGroup, ConnectionDTO connectionDTO, UUID modelId) {
@@ -139,17 +136,44 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
     }
 
     @Override
-    public boolean updatePipeline(Pipeline pipeline) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updatePipeline'");
+    public EngineResponse updateFlow(Pipeline pipeline) {
+        EngineResponse response = deleteFlow(pipeline.getId());
+        switch(response.getStatus()) {
+            case DELETED:
+                // Everything is fine, proceed with creating the new flow
+                break;
+            case NOT_FOUND:
+                // The flow was not found, thus it can be created from scratch
+                break;
+            case ISSUE_EXISTS:
+            default:
+                // There was an issue deleting the flow, return the response
+                return response;
+        }    
+        return createFlow(pipeline);
     }
 
     @Override
-    public boolean deletePipeline(UUID pipelineId) {
+    public EngineResponse deleteFlow(UUID pipelineId) {
         ProcessGroup pgEntity = pgRepo.findByPipelineId(pipelineId);
-        niFiService.deleteProcessGroup(pgEntity.getId(), pgEntity.getVersion());
-        pgRepo.delete(pgEntity);
-        return true;
+        if(pgEntity == null) {
+            System.out.println("No Process Group found for " + pipelineId);
+            return new EngineResponse(EngineFlowStatus.NOT_FOUND);
+        }
+        ResponseEntity<String> response = niFiService.deleteProcessGroup(pgEntity.getId(), pgEntity.getVersion());
+        switch(response.getStatusCode()) {
+            case HttpStatus.NOT_FOUND:
+                System.out.println("Process Group " + pgEntity.getId() + " not found");
+                pgRepo.delete(pgEntity);
+                return new EngineResponse(EngineFlowStatus.NOT_FOUND);
+            case HttpStatus.OK:
+                pgRepo.delete(pgEntity);
+                return new EngineResponse(EngineFlowStatus.DELETED);
+            default:
+                pgEntity.setDeploymentStatus(EngineFlowStatus.ISSUE_EXISTS);
+                pgRepo.save(pgEntity);
+                return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, response.getBody());
+        }
     }
 
     public NiFiService getNiFiService( ) {

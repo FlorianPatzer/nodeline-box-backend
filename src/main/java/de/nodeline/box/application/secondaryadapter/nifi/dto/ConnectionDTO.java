@@ -1,4 +1,4 @@
-package de.nodeline.box.application.primaryadapter.nifi.dto;
+package de.nodeline.box.application.secondaryadapter.nifi.dto;
 
 import java.util.Set;
 

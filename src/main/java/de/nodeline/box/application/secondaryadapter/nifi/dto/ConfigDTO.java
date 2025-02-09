@@ -1,4 +1,6 @@
-package de.nodeline.box.application.primaryadapter.nifi.dto;
+package de.nodeline.box.application.secondaryadapter.nifi.dto;
+
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -7,10 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProcessGroupEntity {
-    private RevisionDTO revision;
-    private ProcessGroupDTO component;
+public class ConfigDTO {
+    private Map<String, String> properties;
 }

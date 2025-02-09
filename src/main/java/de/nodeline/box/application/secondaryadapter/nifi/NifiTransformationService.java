@@ -1,4 +1,4 @@
-package de.nodeline.box.application.primaryadapter.nifi;
+package de.nodeline.box.application.secondaryadapter.nifi;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,13 +6,13 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import de.nodeline.box.application.primaryadapter.nifi.dto.BundleDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConfigDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectableDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionDTO.Relationship;
-import de.nodeline.box.application.primaryadapter.nifi.model.Processor;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessorDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.BundleDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ConfigDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ConnectableDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ConnectionDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ConnectionDTO.Relationship;
+import de.nodeline.box.application.secondaryadapter.nifi.model.Processor;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;
 import de.nodeline.box.domain.model.DataSourceInterface;

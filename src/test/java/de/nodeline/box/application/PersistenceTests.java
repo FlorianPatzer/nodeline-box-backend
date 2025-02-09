@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import de.nodeline.box.BaseTest;
-import de.nodeline.box.application.primaryadapter.nifi.NiFiService;
 import de.nodeline.box.application.secondaryadapter.DataSinkRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.DataSourceRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.HttpGetRequestRepositoryInterface;
@@ -15,6 +14,7 @@ import de.nodeline.box.application.secondaryadapter.HttpPostRequestRepositoryInt
 import de.nodeline.box.application.secondaryadapter.JoltTransformationRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PeerToPeerConnectionRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
+import de.nodeline.box.application.secondaryadapter.nifi.NiFiService;
 import de.nodeline.box.domain.DataGenerator;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;

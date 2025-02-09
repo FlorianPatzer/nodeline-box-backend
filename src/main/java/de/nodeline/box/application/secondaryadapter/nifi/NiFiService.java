@@ -1,4 +1,4 @@
-package de.nodeline.box.application.primaryadapter.nifi;
+package de.nodeline.box.application.secondaryadapter.nifi;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,13 +21,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ConnectionEntity;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessGroupDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessGroupEntity;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessorDTO;
-import de.nodeline.box.application.primaryadapter.nifi.dto.ProcessorEntity;
-import de.nodeline.box.application.primaryadapter.nifi.dto.RevisionDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ConnectionDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ConnectionEntity;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessGroupDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessGroupEntity;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorDTO;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorEntity;
+import de.nodeline.box.application.secondaryadapter.nifi.dto.RevisionDTO;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.client.HttpClient;
@@ -138,7 +138,7 @@ public class NiFiService {
     }
 
     // Delete a process group
-    public HttpStatusCode deleteProcessGroup(String processGroupId, String version) {
+    public ResponseEntity<String> deleteProcessGroup(String processGroupId, String version) {
         ResponseEntity<String> response = webClient.delete()
             .uri(uriBuilder -> uriBuilder
                 .path("/process-groups/{processGroupId}")
@@ -148,7 +148,7 @@ public class NiFiService {
             .retrieve()
             .toEntity(String.class)
             .block();
-        return response.getStatusCode();
+        return response;
     }
 }
 

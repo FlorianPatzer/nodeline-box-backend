@@ -1,10 +1,12 @@
-package de.nodeline.box.application.primaryadapter.nifi.model;
+package de.nodeline.box.application.secondaryadapter.nifi.model;
 
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import de.nodeline.box.domain.model.EngineFlowStatus;
+import de.nodeline.box.domain.model.FlowDeploymentStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,6 +24,7 @@ public class ProcessGroup {
     private String id; 
     UUID pipelineId;
     String version;
+    EngineFlowStatus deploymentStatus;
 
     @OneToMany(mappedBy = "processGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Processor> processors;

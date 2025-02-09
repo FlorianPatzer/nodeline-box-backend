@@ -30,7 +30,7 @@ import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DeviceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
-import de.nodeline.box.application.primaryadapter.nifi.NiFiService;
+import de.nodeline.box.application.secondaryadapter.nifi.NiFiService;
 import de.nodeline.box.domain.DataGenerator;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;

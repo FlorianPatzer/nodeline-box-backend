@@ -12,15 +12,12 @@ import de.nodeline.box.domain.model.DataSource;
 import de.nodeline.box.domain.model.Linkable;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
+import de.nodeline.box.domain.model.PipelineStatus;
 import de.nodeline.box.domain.model.Transformation;
+import de.nodeline.box.domain.port.WorkflowEngine.EngineResponse;
 
-import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponseException;
-
 import java.util.*;
 
 @Service
@@ -41,7 +38,9 @@ public class PipelineService {
 
     public Pipeline toEntity(PipelineDto dto) {
         Pipeline entity = new Pipeline();
-        entity.setId(dto.getId());
+        if(dto.getId() != null) {
+            entity.setId(dto.getId());
+        }
         dto.getDataSinks().forEach(dsDto -> {
             DataSink ds = dataSinkService.toEntity(dsDto);
             ds.setPipeline(entity);
@@ -116,30 +115,65 @@ public class PipelineService {
         return pipelineRepository.findById(id).map(pip -> this.toDto(pip));
     }
 
-    public PipelineDto createPipeline(PipelineDto pipeline) {
-        Pipeline pipelineEntity = this.toEntity(pipeline);
-        if(!workflowEngineService.createPipeline(pipelineEntity)) {
-            throw new RuntimeException("Unable to persist representative for pipeline " + pipeline.getId().toString());
+    public Optional<PipelineDto> createPipeline(PipelineDto pipeline) {
+        if(pipeline.getId() != null) {
+            throw new RuntimeException("ID must not be set for new Pipelines");
         }
-        return this.toDto(pipelineRepository.save(pipelineEntity));
+        Pipeline pipelineEntity = this.toEntity(pipeline);
+        EngineResponse response = workflowEngineService.createFlow(pipelineEntity);
+        switch (response.getStatus()) {
+            case STOPPED:
+                pipelineEntity.setStatus(PipelineStatus.STOPPED);
+                return Optional.of(this.toDto(pipelineRepository.save(pipelineEntity)));
+            case RUNNING:
+                pipelineEntity.setStatus(PipelineStatus.RUNNING);
+                return Optional.of(this.toDto(pipelineRepository.save(pipelineEntity)));
+            case ISSUE_EXISTS:
+            default:
+                pipelineEntity.setStatus(PipelineStatus.ISSUE_EXISTS);
+                pipelineRepository.save(pipelineEntity);
+                return Optional.empty();
+        }
+        
     }
 
     public Optional<PipelineDto> updatePipeline(UUID id, PipelineDto pipeline) {
+        Pipeline pipelineEntity = this.toEntity(pipeline);
         if(pipelineRepository.existsById(id)) {
-            return Optional.of(pipelineRepository.save(this.toEntity(pipeline))).map(pip -> this.toDto(pip));
-        } else {
+            EngineResponse response = workflowEngineService.updateFlow(pipelineEntity);
+            switch (response.getStatus()) {
+                case STOPPED:
+                    pipelineEntity.setStatus(PipelineStatus.STOPPED);
+                    break;
+                case RUNNING:
+                    pipelineEntity.setStatus(PipelineStatus.RUNNING);
+                    break;
+                case ISSUE_EXISTS:
+                default:
+                    pipelineEntity.setStatus(PipelineStatus.ISSUE_EXISTS);
+            }
+            return Optional.of(this.toDto(pipelineRepository.save(pipelineEntity)));
+        } else {              
             return Optional.empty();
         }
     }
 
     public boolean deletePipeline(UUID id) {
         if(pipelineRepository.existsById(id)) {
-            // TODO: Probably not the most performant way to do this:
-            if(!workflowEngineService.deletePipeline(id)) {
-                throw new RuntimeException("Unable to delete representative for pipeline " + id);
+            EngineResponse response = workflowEngineService.deleteFlow(id);
+            switch (response.getStatus()) {
+                case NOT_FOUND:
+                case DELETED:
+                    pipelineRepository.deleteById(id);
+                    return true;
+                case ISSUE_EXISTS:
+                    Pipeline pipeline = pipelineRepository.getReferenceById(id);
+                    System.out.println("Tried to delete Flow " + id + " but engine responded with: " + response.getIssueMessage());
+                    pipeline.setStatus(PipelineStatus.ISSUE_EXISTS);
+                    return false;
+                default:
+                    return false;
             }
-            pipelineRepository.deleteById(id);
-            return true;
         }
         return false;
     }
