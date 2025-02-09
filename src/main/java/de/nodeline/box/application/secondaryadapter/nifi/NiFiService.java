@@ -11,8 +11,8 @@ import java.security.cert.CertificateException;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
@@ -138,8 +138,19 @@ public class NiFiService {
     }
 
     // Delete a process group
-    public ResponseEntity<String> deleteProcessGroup(String processGroupId, String version) {
-        ResponseEntity<String> response = webClient.delete()
+    public ResponseEntity<String> deleteProcessGroup(String processGroupId) {
+        String version;
+        ResponseEntity<ProcessGroupEntity> getResponse = webClient.get()
+            .uri("/process-groups/{processGroupId}", processGroupId)
+            .retrieve()
+            .toEntity(ProcessGroupEntity.class)
+            .block();
+        if(getResponse.getStatusCode() != HttpStatus.OK) {
+            return ResponseEntity.status(getResponse.getStatusCode()).body("Process Group not found");
+        } else {
+            version = String.valueOf(getResponse.getBody().getRevision().getVersion());
+        }
+        ResponseEntity<String> deleteResponse = webClient.delete()
             .uri(uriBuilder -> uriBuilder
                 .path("/process-groups/{processGroupId}")
                 .queryParam("version", version)
@@ -148,7 +159,7 @@ public class NiFiService {
             .retrieve()
             .toEntity(String.class)
             .block();
-        return response;
+        return deleteResponse;
     }
 }
 

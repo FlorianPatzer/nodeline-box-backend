@@ -160,7 +160,7 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
             System.out.println("No Process Group found for " + pipelineId);
             return new EngineResponse(EngineFlowStatus.NOT_FOUND);
         }
-        ResponseEntity<String> response = niFiService.deleteProcessGroup(pgEntity.getId(), pgEntity.getVersion());
+        ResponseEntity<String> response = niFiService.deleteProcessGroup(pgEntity.getId());
         switch(response.getStatusCode()) {
             case HttpStatus.NOT_FOUND:
                 System.out.println("Process Group " + pgEntity.getId() + " not found");
