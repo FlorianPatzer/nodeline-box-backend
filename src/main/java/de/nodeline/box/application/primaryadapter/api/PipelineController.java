@@ -46,7 +46,7 @@ public class PipelineController {
     }
 
     /**
-     * Create a new pipeline
+     * Create a new pipeline and get back a pipeline object with the new pipeline ID
      *
      * @param pipeline Pipeline object from the request body
      * @return Created pipeline or 422 if creation failed

@@ -120,22 +120,6 @@ public class PipelineService {
             throw new RuntimeException("ID must not be set for new Pipelines");
         }
         return Optional.of(this.toDto(pipelineRepository.save(new Pipeline())));
-        /* 
-        Pipeline pipelineEntity = this.toEntity(pipeline);
-        EngineResponse response = workflowEngineService.createFlow(pipelineEntity);
-        switch (response.getStatus()) {
-            case STOPPED:
-                pipelineEntity.setStatus(PipelineStatus.STOPPED);
-                
-            case RUNNING:
-                pipelineEntity.setStatus(PipelineStatus.RUNNING);
-                return Optional.of(this.toDto(pipelineRepository.save(pipelineEntity)));
-            case ISSUE_EXISTS:
-            default:
-                pipelineEntity.setStatus(PipelineStatus.ISSUE_EXISTS);
-                pipelineRepository.save(pipelineEntity);
-                return Optional.empty();
-        } */
         
     }
 
