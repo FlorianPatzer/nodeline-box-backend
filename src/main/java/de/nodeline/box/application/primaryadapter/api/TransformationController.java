@@ -1,26 +1,30 @@
 package de.nodeline.box.application.primaryadapter.api;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import de.nodeline.box.application.acl.api.TransformationService;
-import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
+// import de.nodeline.box.application.acl.api.TransformationService;
+// import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+// import java.util.Optional;
+// import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/transformations")
 public class TransformationController {
 
-    @Autowired
-    private TransformationService transformationService;
+    /* @Autowired
+    private TransformationService transformationService; */
 
+    @GetMapping("/types")
+    public ResponseEntity<List<String>> getAllTransformationTypes() {
+        return ResponseEntity.ok(List.of("JOLT"));
+    }
 
-    @GetMapping
+   /*  @GetMapping
     public ResponseEntity<List<LinkableDto>> getAllTransformations() {
         return ResponseEntity.ok(transformationService.getAllTransformations());
     }
@@ -51,6 +55,6 @@ public class TransformationController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    } */
 }
 

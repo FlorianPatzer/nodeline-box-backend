@@ -1,21 +1,25 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.application.acl.api.DataSinkService;
-import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
+// import de.nodeline.box.application.acl.api.DataSinkService;
+// import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
 
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+// import java.util.Optional;
+// import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/datasinks")
 public class DataSinkController {
+    @GetMapping("/types")
+    public ResponseEntity<List<String>> getAllDataSinkTypes() {
+        return ResponseEntity.ok(List.of("HTTP_POST"));
+    }
 
-    @Autowired
+    /* @Autowired
     private DataSinkService dataSinkService;
 
     @GetMapping
@@ -49,6 +53,6 @@ public class DataSinkController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    } */
 }
 

@@ -1,20 +1,26 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.application.acl.api.DataSourceService;
-import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
-import org.springframework.beans.factory.annotation.Autowired;
+// import de.nodeline.box.application.acl.api.DataSourceService;
+// import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+// import java.util.Optional;
+// import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/datasources")
 public class DataSourceController {
 
-    @Autowired
+
+    @GetMapping("/types")
+    public ResponseEntity<List<String>> getAllDataSourceTypes() {
+        return ResponseEntity.ok(List.of("HTTP_GET"));
+    }
+
+    /* @Autowired
     private DataSourceService dataSourceService;
 
     @GetMapping
@@ -48,5 +54,5 @@ public class DataSourceController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    } */
 }
