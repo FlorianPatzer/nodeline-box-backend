@@ -1,6 +1,7 @@
 package de.nodeline.box.application.acl.api;
 
 import de.nodeline.box.application.primaryadapter.api.dto.EndpointDto;
+import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.DeviceRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.EndpointRepositoryInterface;
 import de.nodeline.box.domain.model.Device;
@@ -44,20 +45,24 @@ public class EndpointService {
         return endpointRepository.findAll().stream().map(endpoint -> this.toDto(endpoint)).toList();
     }
 
-    public Optional<EndpointDto> getEndpointById(UUID id) {
-        return endpointRepository.findById(id).map(endpoint -> this.toDto(endpoint));
+    public EndpointDto getEndpointById(UUID id) {
+        Optional<Endpoint> endpoint = endpointRepository.findById(id);
+        if(endpoint.isPresent()) {
+            return this.toDto(endpoint.get());
+        }
+        throw new ResourceNotFoundException("Endpoint with ID " + id + " not found");
     }
 
     public EndpointDto createEndpoint(EndpointDto endpoint) {
         return this.toDto(endpointRepository.save(this.toEntity(endpoint)));
     }
 
-    public Optional<EndpointDto> updateEndpoint(UUID id, EndpointDto endpoint) {
+    public EndpointDto updateEndpoint(UUID id, EndpointDto endpointDto) {
         if(endpointRepository.existsById(id)) {
-            return Optional.of(endpointRepository.save(this.toEntity(endpoint))).map(e -> this.toDto(e));
-        } else {
-            return Optional.empty();
+            Endpoint endpoint = endpointRepository.save(this.toEntity(endpointDto));
+            return this.toDto(endpoint);
         }
+        throw new ResourceNotFoundException("Endpoint with ID " + id + " not found");
     }
 
     public boolean deleteEndpoint(UUID id) {
@@ -65,7 +70,7 @@ public class EndpointService {
             endpointRepository.deleteById(id);
             return true;
         }
-        return false;
+        throw new ResourceNotFoundException("Endpoint with ID " + id + " not found");
     }
 }
 

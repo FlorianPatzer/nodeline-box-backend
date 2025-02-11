@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -38,8 +37,8 @@ public class EndpointController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<EndpointDto> getEndpointById(@PathVariable UUID id) {
-        Optional<EndpointDto> endpoint = endpointService.getEndpointById(id);
-        return endpoint.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        EndpointDto endpoint = endpointService.getEndpointById(id);
+        return ResponseEntity.ok(endpoint);
     }
 
     @Operation(summary = "Create an endpoint")
@@ -59,8 +58,8 @@ public class EndpointController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<EndpointDto> updateEndpoint(@PathVariable UUID id, @RequestBody EndpointDto endpoint) {
-        Optional<EndpointDto> updatedEndpoint = endpointService.updateEndpoint(id, endpoint);
-        return updatedEndpoint.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        EndpointDto updatedEndpoint = endpointService.updateEndpoint(id, endpoint);
+        return ResponseEntity.ok(updatedEndpoint);
     }
 
     @Operation(summary = "Delete an endpoint")
