@@ -1,24 +1,29 @@
 package de.nodeline.box.application.primaryadapter.api;
 
-import de.nodeline.box.application.acl.api.PeerToPeerConnectionService;
-import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
+// import de.nodeline.box.application.acl.api.PeerToPeerConnectionService;
+// import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
 
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+// import java.util.Optional;
+// import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/links")
 public class LinkController {
 
-    @Autowired
-    private PeerToPeerConnectionService linkService;
+    /* @Autowired
+    private PeerToPeerConnectionService linkService; */
 
-    @GetMapping
+    @GetMapping("/types")
+    public ResponseEntity<List<String>> getAllLinkTypes() {
+        return ResponseEntity.ok(List.of("PEER_TO_PEER"));
+    }
+
+    /* @GetMapping
     public ResponseEntity<List<PeerToPeerDto>> getAllLinks() {
         return ResponseEntity.ok(linkService.getAllLinks());
     }
@@ -49,6 +54,6 @@ public class LinkController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    } */
 }
 
