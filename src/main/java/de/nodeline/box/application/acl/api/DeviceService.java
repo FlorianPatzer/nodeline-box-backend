@@ -1,6 +1,7 @@
 package de.nodeline.box.application.acl.api;
 
 import de.nodeline.box.application.primaryadapter.api.dto.DeviceDto;
+import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.DeviceRepositoryInterface;
 import de.nodeline.box.domain.model.Device;
 
@@ -39,8 +40,12 @@ public class DeviceService {
         return deviceRepository.findAll().stream().map(device -> this.toDto(device)).toList();
     }
 
-    public Optional<DeviceDto> getDeviceById(UUID id) {
-        return deviceRepository.findById(id).map(device -> this.toDto(device));
+    public DeviceDto getDeviceById(UUID id) {
+        Optional<Device> device = deviceRepository.findById(id);
+        if(device.isPresent()) {
+            return this.toDto(device.get());
+        }
+        throw new ResourceNotFoundException("Device with ID " + id + " not found");
     }
 
     public DeviceDto createDevice(DeviceDto device) {
@@ -48,20 +53,20 @@ public class DeviceService {
         return this.toDto(deviceRepository.save(deviceEntity));
     }
 
-    public Optional<DeviceDto> updateDevice(UUID id, DeviceDto device) {
+    public DeviceDto updateDevice(UUID id, DeviceDto deviceDto) {
         if(deviceRepository.existsById(id)) {
-            return Optional.of(deviceRepository.save(this.toEntity(device))).map(dev -> this.toDto(dev));
-        } else {
-            return Optional.empty();
+            Device device = deviceRepository.save(this.toEntity(deviceDto));
+            return this.toDto(device);
         }
+        throw new ResourceNotFoundException("Device with ID " + id + " not found");
     }
 
-    public boolean deleteDevice(UUID id) {
+    public void deleteDevice(UUID id) {
         if(deviceRepository.existsById(id)) {
             deviceRepository.deleteById(id);
-            return true;
+            return;
         }
-        return false;
+        throw new ResourceNotFoundException("Device with ID " + id + " not found");
     }
 }
 

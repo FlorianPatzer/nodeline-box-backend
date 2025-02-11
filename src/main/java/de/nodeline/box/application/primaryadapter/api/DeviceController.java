@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -36,8 +35,8 @@ public class DeviceController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<DeviceDto> getDeviceById(@PathVariable UUID id) {
-        Optional<DeviceDto> device = deviceService.getDeviceById(id);
-        return device.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        DeviceDto device = deviceService.getDeviceById(id);
+        return ResponseEntity.ok(device);
     }
 
     @Operation(summary = "Create a new device")
@@ -57,8 +56,8 @@ public class DeviceController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<DeviceDto> updateDevice(@PathVariable UUID id, @RequestBody DeviceDto device) {
-        Optional<DeviceDto> updatedDevice = deviceService.updateDevice(id, device);
-        return updatedDevice.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        DeviceDto updatedDevice = deviceService.updateDevice(id, device);
+        return ResponseEntity.ok(updatedDevice);
     }
 
     @Operation(summary = "Delete a device")
@@ -68,11 +67,7 @@ public class DeviceController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDevice(@PathVariable UUID id) {
-        boolean deleted = deviceService.deleteDevice(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        deviceService.deleteDevice(id);
+        return ResponseEntity.notFound().build();
     }
 }
