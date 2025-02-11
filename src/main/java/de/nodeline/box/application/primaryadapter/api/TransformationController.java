@@ -5,6 +5,10 @@ package de.nodeline.box.application.primaryadapter.api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 // import de.nodeline.box.application.acl.api.TransformationService;
 // import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 
@@ -19,6 +23,10 @@ public class TransformationController {
     /* @Autowired
     private TransformationService transformationService; */
 
+    @Operation(summary = "Get all transformation types")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of transformation types")
+    })
     @GetMapping("/types")
     public ResponseEntity<List<String>> getAllTransformationTypes() {
         return ResponseEntity.ok(List.of("JOLT"));

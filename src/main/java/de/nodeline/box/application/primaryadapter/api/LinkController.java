@@ -7,6 +7,10 @@ package de.nodeline.box.application.primaryadapter.api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import java.util.List;
 // import java.util.Optional;
 // import java.util.UUID;
@@ -18,6 +22,10 @@ public class LinkController {
     /* @Autowired
     private PeerToPeerConnectionService linkService; */
 
+    @Operation(summary = "Get all link types")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of link types")
+    })
     @GetMapping("/types")
     public ResponseEntity<List<String>> getAllLinkTypes() {
         return ResponseEntity.ok(List.of("PEER_TO_PEER"));

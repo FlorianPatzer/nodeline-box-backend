@@ -6,6 +6,8 @@ import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
+import de.nodeline.box.application.primaryadapter.api.exceptions.InvalidArgumentException;
+import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;
@@ -111,15 +113,19 @@ public class PipelineService {
         return pipelineRepository.findAll().stream().map(pip -> this.toDto(pip)).toList();
     }
 
-    public Optional<PipelineDto> getPipelineById(UUID id) {
-        return pipelineRepository.findById(id).map(pip -> this.toDto(pip));
+    public PipelineDto getPipelineById(UUID id) {
+        Optional<Pipeline> pipeline = pipelineRepository.findById(id);
+        if(pipeline.isEmpty()) {
+            throw new ResourceNotFoundException("Pipeline with ID " + id + " not found");
+        }
+        return this.toDto(pipeline.get());
     }
 
-    public Optional<PipelineDto> createPipeline(PipelineDto pipeline) {
+    public PipelineDto createPipeline(PipelineDto pipeline) {
         if(pipeline.getId() != null) {
-            throw new RuntimeException("ID must not be set for new Pipelines");
+            throw new InvalidArgumentException("ID must not be set for new Pipelines");
         }
-        return Optional.of(this.toDto(pipelineRepository.save(new Pipeline())));
+        return this.toDto(pipelineRepository.save(new Pipeline()));
         /* 
         Pipeline pipelineEntity = this.toEntity(pipeline);
         EngineResponse response = workflowEngineService.createFlow(pipelineEntity);
@@ -139,7 +145,7 @@ public class PipelineService {
         
     }
 
-    public Optional<PipelineDto> updatePipeline(UUID id, PipelineDto pipeline) {
+    public PipelineDto updatePipeline(UUID id, PipelineDto pipeline) {
         Pipeline pipelineEntity = this.toEntity(pipeline);
         if(pipelineRepository.existsById(id)) {
             EngineResponse response = workflowEngineService.updateFlow(pipelineEntity);
@@ -153,31 +159,30 @@ public class PipelineService {
                 case ISSUE_EXISTS:
                 default:
                     pipelineEntity.setStatus(PipelineStatus.ISSUE_EXISTS);
+                    throw new RuntimeException("Tried to update Pipeline " + id + " but engine responded with: " + response.getIssueMessage());
             }
-            return Optional.of(this.toDto(pipelineRepository.save(pipelineEntity)));
-        } else {              
-            return Optional.empty();
+            return this.toDto(pipelineRepository.save(pipelineEntity));
         }
+        throw new ResourceNotFoundException("Pipeline with ID " + id + " not found");
     }
 
-    public boolean deletePipeline(UUID id) {
+    public void deletePipeline(UUID id) {
         if(pipelineRepository.existsById(id)) {
             EngineResponse response = workflowEngineService.deleteFlow(id);
             switch (response.getStatus()) {
                 case NOT_FOUND:
                 case DELETED:
                     pipelineRepository.deleteById(id);
-                    return true;
+                    return;
                 case ISSUE_EXISTS:
                     Pipeline pipeline = pipelineRepository.getReferenceById(id);
-                    System.out.println("Tried to delete Flow " + id + " but engine responded with: " + response.getIssueMessage());
                     pipeline.setStatus(PipelineStatus.ISSUE_EXISTS);
-                    return false;
+                    throw new RuntimeException("Tried to delete Flow " + id + " but engine responded with: " + response.getIssueMessage());
                 default:
-                    return false;
+                    throw new RuntimeException("Tried to delete Flow " + id + " but due to an unknown issue the engine responded with status " + response.getStatus());
             }
         }
-        return false;
+        throw new ResourceNotFoundException("Pipeline with ID " + id + " not found");
     }
 }
 

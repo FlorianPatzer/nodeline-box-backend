@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -43,64 +42,44 @@ public class PipelineController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<PipelineDto> getPipelineById(@Parameter(description = "UUID of the pipeline")  @PathVariable UUID id) {
-        Optional<PipelineDto> pipeline = pipelineService.getPipelineById(id);
-        if (pipeline.isPresent()) {
-            return ResponseEntity.ok(pipeline.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        PipelineDto pipeline = pipelineService.getPipelineById(id);
+        return ResponseEntity.ok(pipeline);        
     }
 
     @Operation(summary = "Create a new pipeline")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Pipeline created"),
         @ApiResponse(responseCode = "400", description = "Invalid request body"),
-        @ApiResponse(responseCode = "422", description = "Pipeline creation failed")
     })
     @PostMapping
     public ResponseEntity<PipelineDto> createPipeline(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Pipeline object from the request body")
             @RequestBody PipelineDto pipeline) {
-        if (pipeline.getId() != null) {
-            return ResponseEntity.badRequest().build();
-            
-        }
-        Optional<PipelineDto> createdPipeline = pipelineService.createPipeline(pipeline);
-        if(createdPipeline.isEmpty()) {
-            return ResponseEntity.unprocessableEntity().build();
-        } else {
-            return ResponseEntity.status(201).body(createdPipeline.get());
-        }
+        PipelineDto createdPipeline = pipelineService.createPipeline(pipeline);
+        return ResponseEntity.status(201).body(createdPipeline);
     }
 
     @Operation(summary = "Update an existing pipeline by ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Pipeline updated"),
         @ApiResponse(responseCode = "404", description = "Pipeline not found"),
-        @ApiResponse(responseCode = "400", description = "Invalid request body")
+        @ApiResponse(responseCode = "500", description = "Unable to update pipeline")
     })
     @PutMapping("/{id}")
     public ResponseEntity<PipelineDto> updatePipeline(@Parameter(description = "UUID of the Pipeline") @PathVariable UUID id, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Pipeline object with desired changes") @RequestBody PipelineDto pipeline) {
-        Optional<PipelineDto> updatedPipeline = pipelineService.updatePipeline(id, pipeline);
-        if (updatedPipeline.isPresent()) {
-            return ResponseEntity.ok(updatedPipeline.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        PipelineDto updatedPipeline = pipelineService.updatePipeline(id, pipeline);
+        return ResponseEntity.ok(updatedPipeline);
     }
 
     @Operation(summary = "Delete a pipeline by ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Pipeline deleted"),
-        @ApiResponse(responseCode = "404", description = "Pipeline not found")
+        @ApiResponse(responseCode = "404", description = "Pipeline not found"),
+        @ApiResponse(responseCode = "500", description = "Unable to delete pipeline")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePipeline(@Parameter(description = "UUID of the pipeline") @PathVariable UUID id) {
-        boolean deleted = pipelineService.deletePipeline(id);
-        if (deleted) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        pipelineService.deletePipeline(id);
+        return ResponseEntity.ok().build();        
     }
 }
 

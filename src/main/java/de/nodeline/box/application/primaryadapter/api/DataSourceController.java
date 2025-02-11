@@ -6,6 +6,10 @@ package de.nodeline.box.application.primaryadapter.api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import java.util.List;
 // import java.util.Optional;
 // import java.util.UUID;
@@ -14,7 +18,10 @@ import java.util.List;
 @RequestMapping("/api/datasources")
 public class DataSourceController {
 
-
+    @Operation(summary = "Get all data source types")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of data source types")
+    })
     @GetMapping("/types")
     public ResponseEntity<List<String>> getAllDataSourceTypes() {
         return ResponseEntity.ok(List.of("HTTP_GET"));

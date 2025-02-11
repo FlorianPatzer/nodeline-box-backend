@@ -7,6 +7,10 @@ package de.nodeline.box.application.primaryadapter.api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import java.util.List;
 // import java.util.Optional;
 // import java.util.UUID;
@@ -14,6 +18,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/datasinks")
 public class DataSinkController {
+
+    @Operation(summary = "Get all data sink types")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of data sink types")
+    })
     @GetMapping("/types")
     public ResponseEntity<List<String>> getAllDataSinkTypes() {
         return ResponseEntity.ok(List.of("HTTP_POST"));
