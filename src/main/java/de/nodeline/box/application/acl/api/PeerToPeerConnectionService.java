@@ -3,6 +3,8 @@ package de.nodeline.box.application.acl.api;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableReferenceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
+import de.nodeline.box.application.primaryadapter.api.exceptions.InvalidArgumentException;
+import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.DataSinkRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.DataSourceRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.JoltTransformationRepositoryInterface;
@@ -43,7 +45,9 @@ public class PeerToPeerConnectionService {
                     if(inEntity.isPresent()) {
                         entity.setIn(inEntity.get());
                     }
-                    //break;
+                    break;
+                default:
+                    throw new InvalidArgumentException("Invalid linkable type " + dto.getSourceLinkableRef().getType());
             }
         }
         if(dto.getTargetLinkableRef() != null) {
@@ -53,7 +57,9 @@ public class PeerToPeerConnectionService {
                     if(inEntity.isPresent()) {
                         entity.setOut(inEntity.get());
                     }
-                    //break;
+                    break;
+                default:
+                    throw new InvalidArgumentException("Invalid linkable type " + dto.getTargetLinkableRef().getType());
             }
         }
         if(dto.getSinkId() != null) {
@@ -73,10 +79,10 @@ public class PeerToPeerConnectionService {
             if(pipEntity.isPresent()) {
                 entity.setPipeline(pipEntity.get());
             } else {                
-                throw new IllegalArgumentException("No pipeline found with id" + dto.getPipelineId());
+                throw new ResourceNotFoundException("No pipeline found with id" + dto.getPipelineId());
             }
         } else {
-            throw new IllegalArgumentException("Pipeline id required for connection " + dto.getId());
+            throw new InvalidArgumentException("Pipeline id required for connection " + dto.getId());
         }
         return entity;
     }
@@ -97,7 +103,7 @@ public class PeerToPeerConnectionService {
                     break;
             
                 default:
-                    break;
+                    throw new InvalidArgumentException("Invalid linkable type " + entity.getIn().getClass().getName());
             }
         }
         if(entity.getOut() != null) {
@@ -110,7 +116,7 @@ public class PeerToPeerConnectionService {
                     break;
             
                 default:
-                    break;
+                    throw new InvalidArgumentException("Invalid linkable type " + entity.getOut().getClass().getName());
             }
         }
         if(entity.getSource() != null) {
@@ -134,20 +140,19 @@ public class PeerToPeerConnectionService {
         return this.toDto(ptpRepository.save(this.toEntity(link)));
     }
 
-    public Optional<PeerToPeerDto> updateLink(UUID id, PeerToPeerDto link) {
+    public PeerToPeerDto updateLink(UUID id, PeerToPeerDto link) {
         if(ptpRepository.existsById(id)) {
-            return Optional.of(ptpRepository.save(this.toEntity(link))).map(ptp -> this.toDto(ptp));
-        } else {
-            return Optional.empty();
+            return this.toDto(ptpRepository.save(this.toEntity(link)));
         }
+        throw new ResourceNotFoundException("No link found with id " + id);
     }
 
-    public boolean deleteLink(UUID id) {
+    public void deleteLink(UUID id) {
         if(ptpRepository.existsById(id)) {
             ptpRepository.deleteById(id);
-            return true;
+            return;
         }
-        return false;
+        throw new ResourceNotFoundException("No link found with id " + id);
     }
 }
 

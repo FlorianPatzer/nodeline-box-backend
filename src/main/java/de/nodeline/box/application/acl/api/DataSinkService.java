@@ -3,6 +3,8 @@ package de.nodeline.box.application.acl.api;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSinkDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DelivererDto;
 import de.nodeline.box.application.primaryadapter.api.dto.HttpPostRequestAttributesDto;
+import de.nodeline.box.application.primaryadapter.api.exceptions.InvalidArgumentException;
+import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.DataSinkRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.EndpointRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PeerToPeerRepositoryInterface;
@@ -66,10 +68,10 @@ public class DataSinkService {
             if(pipEntity.isPresent()) {
                 entity.setPipeline(pipEntity.get());
             } else {                
-                throw new IllegalArgumentException("No pipeline found with id" + dto.getPipelineId());
+                throw new ResourceNotFoundException("No pipeline found with id" + dto.getPipelineId());
             }
         } else {
-            throw new IllegalArgumentException("Pipeline id required for data sink " + dto.getId());
+            throw new InvalidArgumentException("Pipeline id required for data sink " + dto.getId());
         }
         return entity;
     }
@@ -122,21 +124,20 @@ public class DataSinkService {
         return this.toDto(dataSinkRepository.save(dataSink));
     }
 
-    public Optional<DataSinkDto> updateDataSink(UUID id, DataSinkDto dataSinkDto) {
+    public DataSinkDto updateDataSink(UUID id, DataSinkDto dataSinkDto) {
         DataSink dataSink = toEntity(dataSinkDto);
         if(dataSinkRepository.existsById(id)) {
-            return Optional.of(dataSinkRepository.save(dataSink)).map(ds -> this.toDto(ds));
-        } else {
-            return Optional.empty();
+            return this.toDto(dataSinkRepository.save(dataSink));
         }
+        throw new ResourceNotFoundException("No data sink found with id " + id);
     }
 
-    public boolean deleteDataSink(UUID id) {
+    public void deleteDataSink(UUID id) {
         if(dataSinkRepository.existsById(id)) {
             dataSinkRepository.deleteById(id);
-            return true;
+            return;
         }
-        return false;
+        throw new ResourceNotFoundException("No data sink found with id " + id);
     }
 }
 

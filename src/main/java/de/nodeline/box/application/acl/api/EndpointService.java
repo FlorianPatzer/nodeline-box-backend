@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class EndpointService {
@@ -19,6 +21,7 @@ public class EndpointService {
     private EndpointRepositoryInterface endpointRepository;
     @Autowired
     private DeviceRepositoryInterface deviceRepository;
+    private static final Logger logger = LoggerFactory.getLogger(EndpointService.class);
 
     public Endpoint toEntity(EndpointDto dto) {
         Endpoint entity = new Endpoint();
@@ -27,6 +30,7 @@ public class EndpointService {
             Optional<Device> deviceEntity = deviceRepository.findById(dto.getDeviceId());
             if(deviceEntity.isPresent()) {
                 entity.setDevice(deviceEntity.get());
+                logger.warn("Endpoint " + entity.getId() + " has a reference to a non-existent device " + dto.getDeviceId());
             }
         }
         return entity;

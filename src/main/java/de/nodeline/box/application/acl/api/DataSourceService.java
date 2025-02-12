@@ -3,6 +3,8 @@ package de.nodeline.box.application.acl.api;
 import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.HttpGetRequestAttributesDto;
 import de.nodeline.box.application.primaryadapter.api.dto.ProcurerDto;
+import de.nodeline.box.application.primaryadapter.api.exceptions.InvalidArgumentException;
+import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.DataSourceRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.EndpointRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PeerToPeerRepositoryInterface;
@@ -66,10 +68,10 @@ public class DataSourceService {
             if(pipEntity.isPresent()) {
                 entity.setPipeline(pipEntity.get());
             } else {                
-                throw new IllegalArgumentException("No pipeline found with id" + dto.getPipelineId());
+                throw new ResourceNotFoundException("No pipeline found with id" + dto.getPipelineId());
             }
         } else {
-            throw new IllegalArgumentException("Pipeline id required for data source " + dto.getId());
+            throw new InvalidArgumentException("Pipeline id required for data source " + dto.getId());
         }
         return entity;
     }
@@ -122,22 +124,20 @@ public class DataSourceService {
         return this.toDto(dataSourceRepository.save(dataSource));
     }
 
-    public Optional<DataSourceDto> updateDataSource(UUID id, DataSourceDto dataSourceDto) {
+    public DataSourceDto updateDataSource(UUID id, DataSourceDto dataSourceDto) {
         DataSource dataSource = toEntity(dataSourceDto);
         if(dataSourceRepository.existsById(id)) {
-            Optional<DataSourceDto> res = Optional.of(dataSourceRepository.save(dataSource)).map(ds -> this.toDto(ds));
-            return res;
-        } else {
-            return Optional.empty();
+            return this.toDto(dataSourceRepository.save(dataSource));
         }
+        throw new ResourceNotFoundException("No data source found with id " + id);
     }
 
-    public boolean deleteDataSource(UUID id) {
+    public void deleteDataSource(UUID id) {
         if(dataSourceRepository.existsById(id)) {
             dataSourceRepository.deleteById(id);
-            return true;
+            return;
         }
-        return false;
+        throw new ResourceNotFoundException("No data source found with id " + id);
     }
 }
 

@@ -1,5 +1,5 @@
 ## Build Container
-The easiest way to build a container is to run `mvnw spring-boot:build-image` from within the project's main directory.
+The easiest way to build a container is to run `./mvnw spring-boot:build-image` from within the project's main directory.
 
 ## Run
 The containerized version can be started using docker compose: `docker compose up` which will start a postgres container, an adminer container to administrate the db and a container running the main application. Run it with the `--force-recreate` flag if you made changes to the images or configuration. 

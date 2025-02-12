@@ -2,6 +2,8 @@ package de.nodeline.box.application.acl.api;
 
 import de.nodeline.box.application.primaryadapter.api.dto.JoltTransformationAttributesDto;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
+import de.nodeline.box.application.primaryadapter.api.exceptions.InvalidArgumentException;
+import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.JoltTransformationRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PeerToPeerRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
@@ -36,25 +38,31 @@ public class TransformationService {
                 break;
         
             default:
-                throw new IllegalArgumentException("Type of provided transformation entity not supported");
+                throw new InvalidArgumentException("Type of provided transformation entity not supported: " + entity.getClass().getName());
         }
         dto.setId(entity.getId());
         entity.getIn().forEach(link -> {
-            if(link instanceof PeerToPeerConnection) {
-                dto.addInboundLinkId(link.getId());
+            switch (link) {
+                case PeerToPeerConnection con:
+                    dto.addInboundLinkId(con.getId());
+                    break;
+                default:
+                    throw new InvalidArgumentException("Type of provided link entity not supported: " + link.getClass().getName());
             }
         });
         entity.getOut().forEach(link -> {
-            if(link instanceof PeerToPeerConnection) {
+            switch (link) {
+                case PeerToPeerConnection con:
                 dto.addOutboundLinkId(link.getId());
+                    break;
+                default:
+                    throw new InvalidArgumentException("Type of provided link entity not supported: " + link.getClass().getName());
             }
         });
         if(entity.getPipeline() != null) {
             dto.setPipelineId(entity.getPipeline().getId());
         }
-        
-
-        
+                
         return dto;
     }
 
@@ -67,18 +75,18 @@ public class TransformationService {
                 break;
         
             default:
-                throw new IllegalArgumentException("Type of provided transformation entity not supported");
+                throw new InvalidArgumentException("Type of provided transformation entity not supported: " + dto.getType());
         }
         entity.setId(dto.getId());
         if(dto.getPipelineId() != null) {
             Optional<Pipeline> pipEntity = pipelineRepository.findById(dto.getPipelineId());
             if(pipEntity.isPresent()) {
                 entity.setPipeline(pipEntity.get());
-            } else {                
-                throw new IllegalArgumentException("No pipeline found with id" + dto.getPipelineId());
+            } else {  
+                throw new ResourceNotFoundException("No pipeline found with id" + dto.getPipelineId());
             }
         } else {
-            throw new IllegalArgumentException("Pipeline id required for transformation " + dto.getId());
+            throw new InvalidArgumentException("Pipeline id required for transformation " + dto.getId());
         }
         dto.getInboundLinkIds().forEach(linkId -> {
             Optional<PeerToPeerConnection> conEntity = peerToPeerRepository.findById(linkId);
@@ -116,34 +124,33 @@ public class TransformationService {
                 break;
         // handle other transformations here
             default:
-                throw new IllegalArgumentException("Type of provided transformation entity not supported");
+                throw new InvalidArgumentException("Type of provided transformation entity not supported: " + transformation.getClass().getName());
         }
         return resultDto;
     }
 
-    public Optional<LinkableDto> updateTransformation(UUID id, LinkableDto transformationDto) {
+    public LinkableDto updateTransformation(UUID id, LinkableDto transformationDto) {
         Transformation transformation = this.toEntity(transformationDto);
         switch (transformation) {
             case JoltTransformation trans:
                 if(joltTransformationRepository.existsById(id)) {
-                    return Optional.of(joltTransformationRepository.save(trans)).map(t -> toDto(t));
+                    return toDto(joltTransformationRepository.save(trans));
                 } else {
-                    return Optional.empty();
+                    throw new ResourceNotFoundException("No transformation found with id " + id);
                 }
         // handle other transformations here
             default:
-                throw new IllegalArgumentException("Type of provided transformation entity not supported");
+                throw new InvalidArgumentException("Type of provided transformation entity not supported: " + transformation.getClass().getName());
         }
         
     }
 
-    public boolean deleteTransformation(UUID id) {
+    public void deleteTransformation(UUID id) {
         if(joltTransformationRepository.existsById(id)) {
             joltTransformationRepository.deleteById(id);
-            return true;
+            return;
         }
-        // handle other transformations here
-        return false;
+        throw new ResourceNotFoundException("No transformation found with id " + id);
     }
 }
 
