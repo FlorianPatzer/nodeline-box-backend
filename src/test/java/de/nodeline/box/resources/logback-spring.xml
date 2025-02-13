@@ -1,0 +1,6 @@
+<configuration>
+
+    <root level="info">
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>

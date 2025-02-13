@@ -5,8 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
 
 import de.nodeline.box.domain.model.PipelineStatus;
 import lombok.Getter;
@@ -16,7 +14,6 @@ import lombok.Setter;
 @Getter
 public class PipelineDto {    
     @JsonProperty("id")
-    @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
     private UUID id;
     @JsonProperty("dataSources")
     private Set<DataSourceDto> dataSources;

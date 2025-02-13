@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorEntity;
 import de.nodeline.box.application.secondaryadapter.nifi.model.Connection;
 import de.nodeline.box.application.secondaryadapter.nifi.model.ProcessGroup;
 import de.nodeline.box.application.secondaryadapter.nifi.model.Processor;
+import de.nodeline.box.application.acl.api.EndpointService;
 import de.nodeline.box.application.secondaryadapter.NifiProcessGroupRepositoryInterface;
 import de.nodeline.box.domain.model.EngineFlowStatus;
 import de.nodeline.box.domain.model.Link;
@@ -36,6 +39,7 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
     private NifiProcessGroupRepositoryInterface pgRepo;
     @Autowired
     private NifiTransformationService transformationService;
+    private static final Logger logger = LoggerFactory.getLogger(EndpointService.class);
 
     @Override
     public EngineResponse createFlow(Pipeline pipeline) {        
@@ -157,7 +161,7 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
     public EngineResponse deleteFlow(UUID pipelineId) {
         ProcessGroup pgEntity = pgRepo.findByPipelineId(pipelineId);
         if(pgEntity == null) {
-            System.out.println("No Process Group found for " + pipelineId);
+            logger.warn("No Process Group found for " + pipelineId);
             return new EngineResponse(EngineFlowStatus.NOT_FOUND);
         }
         ResponseEntity<String> response = niFiService.deleteProcessGroup(pgEntity.getId());

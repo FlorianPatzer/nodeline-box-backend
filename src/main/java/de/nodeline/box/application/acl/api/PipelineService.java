@@ -146,8 +146,8 @@ public class PipelineService {
     }
 
     public PipelineDto updatePipeline(UUID id, PipelineDto pipeline) {
-        Pipeline pipelineEntity = this.toEntity(pipeline);
         if(pipelineRepository.existsById(id)) {
+            Pipeline pipelineEntity = this.toEntity(pipeline);
             EngineResponse response = workflowEngineService.updateFlow(pipelineEntity);
             switch (response.getStatus()) {
                 case STOPPED:

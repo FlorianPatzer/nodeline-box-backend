@@ -1,0 +1,18 @@
+<configuration>
+    <springProperty scope="context" name="LOG_PATH" source="logging.file.path" defaultValue="/var/logs/box" />
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Archive logs every day and keep 60 days worth of history -->
+            <fileNamePattern>${LOG_PATH}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-4relative %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+        <!--<encoder class="net.logstash.logback.encoder.LogstashEncoder" />-->
+    </appender>
+    <root level="info">
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>

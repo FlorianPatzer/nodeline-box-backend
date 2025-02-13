@@ -10,6 +10,8 @@ import de.nodeline.box.application.primaryadapter.api.PrimaryApiExceptionHandler
 public class BoxApplication {
 
 	public static void main(String[] args) {
+		System.out.println(System.getenv("SPRING_PROFILES_ACTIVE"));
+		System.out.println(System.getProperty("spring.profiles.active"));
 		SpringApplication.run(BoxApplication.class, args);
 	}
 

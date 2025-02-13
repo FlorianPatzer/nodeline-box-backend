@@ -27,9 +27,15 @@ services:
       - 8181:8080
   
   box:
+    build:
+      context: .  # Use the current directory as the build context
+      dockerfile: Dockerfile  # Specify the Dockerfile (optional if named 'Dockerfile')
     image: box:0.0.1-SNAPSHOT
     restart: always
     ports:
       - 8111:8080
+    volumes:
+      - ./logs:/var/logs/box
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/nodeline-box-persistence
+      SPRING_PROFILES_ACTIVE: container
