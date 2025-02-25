@@ -6,6 +6,7 @@ import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PeerToPeerDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
+import de.nodeline.box.application.primaryadapter.api.dto.PipelineStatusDto;
 import de.nodeline.box.application.primaryadapter.api.exceptions.InvalidArgumentException;
 import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
@@ -109,6 +110,36 @@ public class PipelineService {
         return dto;
     }
 
+    public PipelineStatus toPipelineStatusEntity(PipelineStatusDto dto) {
+        switch (dto) {
+            case RUNNING:
+                return PipelineStatus.RUNNING;
+            case STOPPED:
+                return PipelineStatus.STOPPED;
+            case ISSUE_EXISTS:
+                return PipelineStatus.ISSUE_EXISTS;
+            case NOT_DEPLOYED:
+                return PipelineStatus.NOT_DEPLOYED;
+            default:
+                throw new InvalidArgumentException("Unknown pipeline status: " + dto);
+        }
+    }
+
+    public PipelineStatusDto toPipelineStatusDto(PipelineStatus entity) {
+        switch (entity) {
+            case RUNNING:
+                return PipelineStatusDto.RUNNING;
+            case STOPPED:
+                return PipelineStatusDto.STOPPED;
+            case ISSUE_EXISTS:
+                return PipelineStatusDto.ISSUE_EXISTS;
+            case NOT_DEPLOYED:
+                return PipelineStatusDto.NOT_DEPLOYED;
+            default:
+                throw new InvalidArgumentException("Unknown pipeline status: " + entity);
+        }
+    }
+
     public List<PipelineDto> getAllPipelines() {
         return pipelineRepository.findAll().stream().map(pip -> this.toDto(pip)).toList();
     }
@@ -181,6 +212,21 @@ public class PipelineService {
                 default:
                     throw new RuntimeException("Tried to delete Flow " + id + " but due to an unknown issue the engine responded with status " + response.getStatus());
             }
+        }
+        throw new ResourceNotFoundException("Pipeline with ID " + id + " not found");
+    }
+
+    public void updatePipelineStatus(UUID id, PipelineStatusDto pipelineStatusDto) {
+        PipelineStatus pipelineStatus = toPipelineStatusEntity(pipelineStatusDto);
+        if(pipelineRepository.existsById(id)) {
+            Pipeline pipeline = pipelineRepository.getReferenceById(id);
+            if(pipeline.getStatus() == pipelineStatus) {
+                return;
+            }
+            workflowEngineService.updateFlowStatus(pipeline, pipelineStatus);
+            pipeline.setStatus(pipelineStatus);
+            pipelineRepository.save(pipeline);
+            return;
         }
         throw new ResourceNotFoundException("Pipeline with ID " + id + " not found");
     }

@@ -1,9 +1,11 @@
 package de.nodeline.box.application.secondaryadapter.nifi.dto;
 
+
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import de.nodeline.box.application.secondaryadapter.nifi.model.RelationshipInterface;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,14 +19,7 @@ public class ConnectionDTO {
     private String name;
     private ConnectableDTO source;
     private ConnectableDTO destination;
-    private Set<Relationship> selectedRelationships;
+    private Set<RelationshipInterface> selectedRelationships;
 
-    public enum Relationship {
-        Response
-    }
-
-    public void addRelationship(Relationship relationship) {
-        selectedRelationships.add(relationship);
-    }
 }
 

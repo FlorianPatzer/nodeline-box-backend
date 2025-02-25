@@ -32,6 +32,8 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.client.HttpClient;
 
+// 
+
 @Service
 public class NiFiService {
 
@@ -160,6 +162,16 @@ public class NiFiService {
             .toEntity(String.class)
             .block();
         return deleteResponse;
+    }
+
+    public ResponseEntity<String> activateProcessGroup(String processGroupId) {
+        ResponseEntity<String> resp = webClient.put()
+            .uri("/flow/process-groups//{processGroupId}", processGroupId)
+            .bodyValue("{\"id\":\"" + processGroupId + "\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}")
+            .retrieve()
+            .toEntity(String.class)
+            .block();
+        return ResponseEntity.ok(resp.getBody());
     }
 }
 

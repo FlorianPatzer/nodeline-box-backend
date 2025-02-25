@@ -1,5 +1,6 @@
 package de.nodeline.box.application.acl.nifi;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -20,14 +21,17 @@ import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessGroupDTO;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessGroupEntity;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorDTO;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorEntity;
+import de.nodeline.box.application.secondaryadapter.nifi.model.RelationshipInterface;
 import de.nodeline.box.application.secondaryadapter.nifi.model.Connection;
 import de.nodeline.box.application.secondaryadapter.nifi.model.ProcessGroup;
 import de.nodeline.box.application.secondaryadapter.nifi.model.Processor;
+import de.nodeline.box.application.secondaryadapter.nifi.model.Processor.Type;
 import de.nodeline.box.application.acl.api.EndpointService;
 import de.nodeline.box.application.secondaryadapter.NifiProcessGroupRepositoryInterface;
 import de.nodeline.box.domain.model.EngineFlowStatus;
 import de.nodeline.box.domain.model.Link;
 import de.nodeline.box.domain.model.Pipeline;
+import de.nodeline.box.domain.model.PipelineStatus;
 import de.nodeline.box.domain.port.WorkflowEngine.EngineResponse;
 import de.nodeline.box.domain.port.WorkflowEngine.WorkflowEngineService;
 
@@ -65,12 +69,21 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
                 ProcessorDTO processorDTO = transformationService.sourceToProcessorDTO(source);
                 pgEntity.addProcessor(createProcessor(pgEntity, processorDTO, source.getId()));
             });
-            pipeline.getLinks().forEach(link -> {                
+            pipeline.getLinks().forEach(link -> {           
+                Processor sourceProcessor = getSourceProcessorByModelId(link,  pgEntity.getProcessors());
+                Processor destinationProcessor = getDestinationProcessorByModelId(link,  pgEntity.getProcessors());
+
+                //Select relationships for the connection
+                HashSet<RelationshipInterface> relationships = new HashSet<>();
+                relationships.addAll(getRelationshipsToSelectByDefault(sourceProcessor.getType()));
+                relationships.addAll(getRelationshipsToSelectByDefault(destinationProcessor.getType()));
+
                 ConnectionDTO connectionDTO = transformationService.linkToConnectionDTO(
                     link,
-                    getSourceProcessorByModelId(link,  pgEntity.getProcessors()).getId(),
-                    getDestinationProcessorByModelId(link,  pgEntity.getProcessors()).getId(),
-                    nifiProcessGroupId
+                    sourceProcessor.getId(),
+                    destinationProcessor.getId(),
+                    nifiProcessGroupId,
+                    relationships
                 );
                 pgEntity.addConnection(createConnection(pgEntity, connectionDTO, link.getId()));
             });
@@ -78,6 +91,20 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
             return new EngineResponse(EngineFlowStatus.STOPPED);
         }
         return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, response.getBody().toString());
+    }
+
+    private Collection<? extends RelationshipInterface> getRelationshipsToSelectByDefault(Type type) {
+        HashSet<RelationshipInterface> relationships = new HashSet<>();
+        switch (type) {
+            case Processor.Type.HTTP_REQUEST:
+                relationships.add(Processor.HttpRequestRelationship.RESPONSE);
+                return relationships;
+            case Processor.Type.JOLT_TRANSFORMATION:
+                relationships.add(Processor.JoltTransformationRelationship.SUCCESS);
+                return relationships;
+            default:
+                throw new UnsupportedOperationException("Unsupported processor type found!");
+        }
     }
 
     private Connection createConnection(ProcessGroup processGroup, ConnectionDTO connectionDTO, UUID modelId) {
@@ -132,7 +159,8 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
                 processorResponse.getBody().getComponent().getId(),
                 String.valueOf(processorResponse.getBody().getRevision().getVersion()),
                 pg,
-                modelId
+                modelId,
+                processorDTO.getType()
             );
             return processorEntity;
         }
@@ -182,5 +210,58 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
 
     public NiFiService getNiFiService( ) {
         return niFiService;
+    }
+
+    public EngineResponse updateFlowStatus(Pipeline pipeline, PipelineStatus pipelineStatus) {
+        ProcessGroup pgEntity = pgRepo.findByPipelineId(pipeline.getId());
+        if(pgEntity == null) {
+            logger.warn("No Process Group found for pipeline " + pipeline.getId() + ".");
+            if(pipelineStatus == PipelineStatus.RUNNING) {
+                logger.info("Trying to create a new Process Group for pipeline " + pipeline.getId() + ".");
+                EngineResponse creationResponse = createFlow(pipeline);
+                switch (creationResponse.getStatus()) {
+                    case ISSUE_EXISTS:
+                        creationResponse.setIssueMessage("No Process Group found for pipeline and issue arised when trying to create a new one: " 
+                            + creationResponse.getIssueMessage());
+                        return creationResponse;
+                    case STOPPED:
+                        activateFlow(pgRepo.findByPipelineId(pipeline.getId()));
+                        break;
+                    case RUNNING:
+                    default: // DELETED, NOT_FOUND
+                        throw new RuntimeException("Received unexpected EngineResponseStatus " + creationResponse.getStatus() + " when trying to create a new Process Group for pipeline " + pipeline.getId() + ".");
+                }
+            }        
+
+            return new EngineResponse(EngineFlowStatus.NOT_FOUND);
+        }
+        switch (pipelineStatus) {
+            case RUNNING:
+                switch (pgEntity.getDeploymentStatus()) {
+                    case RUNNING:
+                        return new EngineResponse(EngineFlowStatus.RUNNING);
+                    case STOPPED:
+                        return activateFlow(pgEntity);
+                    default:
+                        return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, "Process Group has an issue and cannot be started.");
+                }
+            case STOPPED:
+                throw new UnsupportedOperationException("Unimplemented method 'updateFlowStatus'");
+            default:
+                break;
+        }
+        throw new UnsupportedOperationException("Unimplemented method 'updateFlowStatus'");
+    }
+
+    EngineResponse activateFlow(ProcessGroup processGroup) {
+        ResponseEntity<String> response = niFiService.activateProcessGroup(processGroup.getId());
+        if(response.getStatusCode() == HttpStatus.OK) {
+            processGroup.setDeploymentStatus(EngineFlowStatus.RUNNING);
+            pgRepo.save(processGroup);
+            return new EngineResponse(EngineFlowStatus.RUNNING);
+        }
+        processGroup.setDeploymentStatus(EngineFlowStatus.ISSUE_EXISTS);
+        pgRepo.save(processGroup);
+        return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, response.getBody());
     }
 }

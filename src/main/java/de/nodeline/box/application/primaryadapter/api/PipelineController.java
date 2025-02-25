@@ -2,6 +2,8 @@ package de.nodeline.box.application.primaryadapter.api;
 
 import de.nodeline.box.application.acl.api.PipelineService;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
+import de.nodeline.box.application.primaryadapter.api.dto.PipelineStatusDto;
+import de.nodeline.box.domain.model.PipelineStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -56,6 +58,19 @@ public class PipelineController {
             @RequestBody PipelineDto pipeline) {
         PipelineDto createdPipeline = pipelineService.createPipeline(pipeline);
         return ResponseEntity.status(201).body(createdPipeline);
+    }
+
+    @Operation(summary = "Change the status of a pipeline")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Pipeline status updated"),
+        @ApiResponse(responseCode = "404", description = "Pipeline not found"),
+        @ApiResponse(responseCode = "500", description = "Unable to update pipeline")
+    })
+    @PostMapping("/{id}/status")
+    public ResponseEntity<Void> changePipelineStatus(@Parameter(description = "UUID of the Pipeline") @PathVariable UUID id, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Pipeline status")
+            @RequestBody PipelineStatusDto pipelineStatus) {
+        pipelineService.updatePipelineStatus(id, pipelineStatus);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Update an existing pipeline by ID")

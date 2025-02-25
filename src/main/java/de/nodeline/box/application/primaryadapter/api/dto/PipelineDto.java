@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.nodeline.box.domain.model.PipelineStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +23,7 @@ public class PipelineDto {
     @JsonProperty("links")
     private Set<PeerToPeerDto> links;
     @JsonProperty("status")
-    private PipelineStatus status;
+    private PipelineStatusDto status;
 
     public PipelineDto() {
         this.dataSinks = new HashSet<>();

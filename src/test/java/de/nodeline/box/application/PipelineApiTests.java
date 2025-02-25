@@ -43,6 +43,7 @@ import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorDTO;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.ProcessorEntity;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.RevisionDTO;
 import de.nodeline.box.application.secondaryadapter.nifi.model.ProcessGroup;
+import de.nodeline.box.application.secondaryadapter.nifi.model.Processor;
 import de.nodeline.box.domain.DataGenerator;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;
@@ -291,7 +292,7 @@ public class PipelineApiTests extends BaseTest {
         when(niFiService.deleteProcessGroup(any())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         when(niFiService.createProcessor(any(), any())).thenReturn(new ResponseEntity<ProcessorEntity>(new ProcessorEntity(
             new RevisionDTO("1", 0, null),
-            new ProcessorDTO(UUID.randomUUID().toString(),"pmock", LinkableDto.Type.JOLT_TRANSFORMATION.toString(), null, null, null)
+            new ProcessorDTO(UUID.randomUUID().toString(),"pmock", Processor.Type.JOLT_TRANSFORMATION, null, null, null)
         ), HttpStatus.CREATED));
         when(niFiService.createConnection(any(), any())).thenReturn(new ResponseEntity<ConnectionEntity>(new ConnectionEntity(
             new RevisionDTO("1", 0, null),
