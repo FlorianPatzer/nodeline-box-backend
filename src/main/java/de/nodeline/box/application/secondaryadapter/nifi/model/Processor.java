@@ -4,6 +4,7 @@ package de.nodeline.box.application.secondaryadapter.nifi.model;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -34,29 +35,54 @@ public class Processor {
 
     
     public enum HttpRequestRelationship implements RelationshipInterface {
-        @JsonProperty("Failure")
-        FAILURE,
-        @JsonProperty("Retry")
-        RETRY,
-        @JsonProperty("No Retry")
-        NO_RETRY,
-        @JsonProperty("Original")
-        ORIGINAL,
-        @JsonProperty("Response")
-        RESPONSE
+        FAILURE("Failure"),
+        RETRY("Retry"),
+        NO_RETRY("No Retry"),
+        ORIGINAL("Original"),
+        RESPONSE("Response");
+        
+        private final String value;
+
+        HttpRequestRelationship(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
     }
 
     public enum JoltTransformationRelationship implements RelationshipInterface {
-        @JsonProperty("failure")
-        FAILURE,
-        @JsonProperty("success")
-        SUCCESS
+        FAILURE("failure"),
+        SUCCESS("success");
+
+        private final String value;
+
+        JoltTransformationRelationship(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
     }
 
     public enum Type {
-        @JsonProperty("org.apache.nifi.processors.standard.InvokeHTTP")
-        HTTP_REQUEST,
-        @JsonProperty("org.apache.nifi.processors.jolt.JoltTransformJSON")
-        JOLT_TRANSFORMATION
+        HTTP_REQUEST("org.apache.nifi.processors.standard.InvokeHTTP"),
+        JOLT_TRANSFORMATION("org.apache.nifi.processors.jolt.JoltTransformJSON");
+
+        private final String value;
+
+        Type(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
+
     }
 }

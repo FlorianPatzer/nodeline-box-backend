@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import de.nodeline.box.application.secondaryadapter.nifi.dto.BundleDTO;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.ConfigDTO;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.ConnectableDTO;
@@ -34,14 +36,18 @@ public class NifiTransformationService {
                 processorDTO.setType(Processor.Type.HTTP_REQUEST);
                 processorDTO.setBundle(STANDARD_BUNDLE);
                 //Add config
-                Map<String, String> configMap = new HashMap<>();
-                configMap.put("HTTP Method", "POST");
-                configMap.put("HTTP URL", req.getUrl());
-                HashSet<RelationshipInterface> autoTerminatedRelationships = new HashSet<>();
-                autoTerminatedRelationships.add(Processor.HttpRequestRelationship.FAILURE);
-                autoTerminatedRelationships.add(Processor.HttpRequestRelationship.RETRY);
-                autoTerminatedRelationships.add(Processor.HttpRequestRelationship.NO_RETRY);
-                processorDTO.setConfig(new ConfigDTO(configMap, autoTerminatedRelationships));
+                Map<String, String> properties = new HashMap<>();
+                properties.put("HTTP Method", "POST");
+                properties.put("HTTP URL", req.getUrl());
+                ConfigDTO processorConfig = new ConfigDTO(properties, new HashSet<>());
+                try {
+                    processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.FAILURE);
+                    processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.RETRY);
+                    processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.NO_RETRY);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException("Error while trying to serialize relationship to json");
+                }
+                processorDTO.setConfig(processorConfig);
                 return processorDTO;
             default:
                 throw new UnsupportedOperationException("Unsupported linkable found!");
@@ -55,15 +61,19 @@ public class NifiTransformationService {
                 processorDTO.setType(Processor.Type.HTTP_REQUEST);
                 processorDTO.setBundle(STANDARD_BUNDLE);
                 //Add config
-                Map<String, String> configMap = new HashMap<>();
-                configMap.put("HTTP Method", "GET");
-                configMap.put("HTTP URL", req.getUrl());
+                Map<String, String> properties = new HashMap<>();
+                properties.put("HTTP Method", "GET");
+                properties.put("HTTP URL", req.getUrl());
                 //Select default terminating relationships
-                HashSet<RelationshipInterface> autoTerminatedRelationships = new HashSet<>();
-                autoTerminatedRelationships.add(Processor.HttpRequestRelationship.FAILURE);
-                autoTerminatedRelationships.add(Processor.HttpRequestRelationship.RETRY);
-                autoTerminatedRelationships.add(Processor.HttpRequestRelationship.NO_RETRY);
-                processorDTO.setConfig(new ConfigDTO(configMap, autoTerminatedRelationships));
+                ConfigDTO processorConfig = new ConfigDTO(properties, new HashSet<>());
+                try {
+                    processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.FAILURE);
+                    processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.RETRY);
+                    processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.NO_RETRY);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException("Error while trying to serialize relationship to json");
+                }
+                processorDTO.setConfig(processorConfig);
                 return processorDTO;
             default:
                 throw new UnsupportedOperationException("Unsupported linkable found!");
@@ -76,12 +86,16 @@ public class NifiTransformationService {
                 processorDTO.setType(Processor.Type.JOLT_TRANSFORMATION);
                 processorDTO.setBundle(new BundleDTO("org.apache.nifi", "nifi-jolt-nar", "2.0.0-M4"));
                 //Add config
-                Map<String, String> configMap = new HashMap<>();
-                configMap.put("Jolt Transform", "jolt-transform-chain");
-                configMap.put("Jolt Specification", trans.getJoltSpecification());
-                HashSet<RelationshipInterface> autoTerminatedRelationships = new HashSet<>();
-                autoTerminatedRelationships.add(Processor.JoltTransformationRelationship.FAILURE);
-                processorDTO.setConfig(new ConfigDTO(configMap, autoTerminatedRelationships));
+                Map<String, String> properties = new HashMap<>();
+                properties.put("Jolt Transform", "jolt-transform-chain");
+                properties.put("Jolt Specification", trans.getJoltSpecification());
+                ConfigDTO processorConfig = new ConfigDTO(properties, new HashSet<>());
+                try {
+                    processorConfig.addRelationshipForTermination(Processor.JoltTransformationRelationship.FAILURE);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException("Error while trying to serialize relationship to json");
+                }
+                processorDTO.setConfig(processorConfig);
                 return processorDTO;
             default:
                 throw new UnsupportedOperationException("Unsupported linkable found!");
@@ -89,7 +103,7 @@ public class NifiTransformationService {
     }
 
     public ConnectionDTO linkToConnectionDTO(Link link, String source, String destination, String groupId, Set<RelationshipInterface> relationships) {
-        return new ConnectionDTO(null, "", 
+        ConnectionDTO connectionDto = new ConnectionDTO(null, "", 
             new ConnectableDTO(
                 source,
                 ConnectableDTO.Type.PROCESSOR,
@@ -100,8 +114,16 @@ public class NifiTransformationService {
                 ConnectableDTO.Type.PROCESSOR,
                 groupId
             ),
-            relationships
+            new HashSet<>()
         );
+        for(RelationshipInterface relationship : relationships) {
+            try {
+                connectionDto.addRelationship(relationship);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Error while trying to serialize relationship to json");
+            }
+        }
+        return connectionDto;
     }
 
     public static String getType(Linkable linkable) {
