@@ -44,6 +44,8 @@ public class NifiTransformationService {
                     processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.FAILURE);
                     processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.RETRY);
                     processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.NO_RETRY);
+                    processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.RESPONSE);
+                    processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.ORIGINAL);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException("Error while trying to serialize relationship to json");
                 }

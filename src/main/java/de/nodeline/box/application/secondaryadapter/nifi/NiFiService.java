@@ -12,6 +12,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -166,8 +167,20 @@ public class NiFiService {
 
     public ResponseEntity<String> activateProcessGroup(String processGroupId) {
         ResponseEntity<String> resp = webClient.put()
-            .uri("/flow/process-groups//{processGroupId}", processGroupId)
-            .bodyValue("{\"id\":\"" + processGroupId + "\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}")
+            .uri("/flow/process-groups/{processGroupId}", processGroupId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue("{\"id\":\"" + processGroupId + "\",\"state\":\"RUNNING\", \"disconnectedNodeAcknowledged\": true}")
+            .retrieve()
+            .toEntity(String.class)
+            .block();
+        return ResponseEntity.ok(resp.getBody());
+    }
+
+    public ResponseEntity<String> deactivateProcessGroup(String processGroupId) {
+        ResponseEntity<String> resp = webClient.put()
+            .uri("/flow/process-groups/{processGroupId}", processGroupId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue("{\"id\":\"" + processGroupId + "\",\"state\":\"STOPPED\", \"disconnectedNodeAcknowledged\": true}")
             .retrieve()
             .toEntity(String.class)
             .block();

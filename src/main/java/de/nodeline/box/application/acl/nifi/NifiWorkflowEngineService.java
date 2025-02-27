@@ -76,7 +76,6 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
                 //Select relationships for the connection
                 HashSet<RelationshipInterface> relationships = new HashSet<>();
                 relationships.addAll(getRelationshipsToSelectByDefault(sourceProcessor.getType()));
-                relationships.addAll(getRelationshipsToSelectByDefault(destinationProcessor.getType()));
 
                 ConnectionDTO connectionDTO = transformationService.linkToConnectionDTO(
                     link,
@@ -98,6 +97,7 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
         switch (type) {
             case Processor.Type.HTTP_REQUEST:
                 relationships.add(Processor.HttpRequestRelationship.RESPONSE);
+                relationships.add(Processor.HttpRequestRelationship.ORIGINAL);
                 return relationships;
             case Processor.Type.JOLT_TRANSFORMATION:
                 relationships.add(Processor.JoltTransformationRelationship.SUCCESS);
@@ -225,32 +225,36 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
                             + creationResponse.getIssueMessage());
                         return creationResponse;
                     case STOPPED:
-                        activateFlow(pgRepo.findByPipelineId(pipeline.getId()));
-                        break;
-                    case RUNNING:
+                        return activateFlow(pgRepo.findByPipelineId(pipeline.getId()));
+                    case RUNNING: // Nifi does not automatically start its newly created flows, thus there must be an issue
                     default: // DELETED, NOT_FOUND
-                        throw new RuntimeException("Received unexpected EngineResponseStatus " + creationResponse.getStatus() + " when trying to create a new Process Group for pipeline " + pipeline.getId() + ".");
+                        return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, "Received unexpected EngineResponseStatus " + creationResponse.getStatus() + " when trying to create a new Process Group for pipeline " + pipeline.getId() + ".");
                 }
             }        
-
+            // Nothing to do for now, we may have to do something when the frow should be started
             return new EngineResponse(EngineFlowStatus.NOT_FOUND);
+        } else {
+            switch (pipelineStatus) {
+                case RUNNING:
+                    switch (pgEntity.getDeploymentStatus()) {
+                        case RUNNING: // If we have a status "RUNNING" maybe the flow was stopped outside the controller, so let's make sure it is running
+                        case STOPPED:
+                            return activateFlow(pgEntity);
+                        default:
+                            return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, "Process Group has an issue and cannot be started.");
+                    }
+                case STOPPED:
+                    switch (pgEntity.getDeploymentStatus()) {
+                        case STOPPED: // If we have a status "STOPPED" maybe the flow was started outside the controller, so let's make sure it is stopped
+                        case RUNNING:
+                            return deactivateFlow(pgEntity);
+                        default:
+                            return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, "Process Group has an issue and cannot be stopped.");
+                    }
+                default:
+                    throw new UnsupportedOperationException("Currently only pipeline status RUNNING and STOPPED are supported.");
+            }            
         }
-        switch (pipelineStatus) {
-            case RUNNING:
-                switch (pgEntity.getDeploymentStatus()) {
-                    case RUNNING:
-                        return new EngineResponse(EngineFlowStatus.RUNNING);
-                    case STOPPED:
-                        return activateFlow(pgEntity);
-                    default:
-                        return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, "Process Group has an issue and cannot be started.");
-                }
-            case STOPPED:
-                throw new UnsupportedOperationException("Unimplemented method 'updateFlowStatus'");
-            default:
-                break;
-        }
-        throw new UnsupportedOperationException("Unimplemented method 'updateFlowStatus'");
     }
 
     EngineResponse activateFlow(ProcessGroup processGroup) {
@@ -259,6 +263,18 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
             processGroup.setDeploymentStatus(EngineFlowStatus.RUNNING);
             pgRepo.save(processGroup);
             return new EngineResponse(EngineFlowStatus.RUNNING);
+        }
+        processGroup.setDeploymentStatus(EngineFlowStatus.ISSUE_EXISTS);
+        pgRepo.save(processGroup);
+        return new EngineResponse(EngineFlowStatus.ISSUE_EXISTS, response.getBody());
+    }
+
+    EngineResponse deactivateFlow(ProcessGroup processGroup) {
+        ResponseEntity<String> response = niFiService.deactivateProcessGroup(processGroup.getId());
+        if(response.getStatusCode() == HttpStatus.OK) {
+            processGroup.setDeploymentStatus(EngineFlowStatus.STOPPED);
+            pgRepo.save(processGroup);
+            return new EngineResponse(EngineFlowStatus.STOPPED);
         }
         processGroup.setDeploymentStatus(EngineFlowStatus.ISSUE_EXISTS);
         pgRepo.save(processGroup);
