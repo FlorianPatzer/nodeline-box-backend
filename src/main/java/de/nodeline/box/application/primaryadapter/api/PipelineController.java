@@ -66,7 +66,6 @@ public class PipelineController {
         @ApiResponse(responseCode = "404", description = "Pipeline not found"),
         @ApiResponse(responseCode = "500", description = "Unable to update pipeline")
     })
-
     @PostMapping("/{id}/status")
     public ResponseEntity<Void> changePipelineStatus(@Parameter(description = "UUID of the Pipeline") @PathVariable UUID id, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Pipeline status")
             @RequestBody PipelineStatusDto pipelineStatus) {
@@ -79,8 +78,7 @@ public class PipelineController {
         @ApiResponse(responseCode = "200", description = "Pipeline updated"),
         @ApiResponse(responseCode = "404", description = "Pipeline not found"),
         @ApiResponse(responseCode = "500", description = "Unable to update pipeline")
-    })
-    
+    })    
     @PutMapping("/{id}")
     public ResponseEntity<PipelineDto> updatePipeline(@Parameter(description = "UUID of the Pipeline") @PathVariable UUID id, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Pipeline object with desired changes") @RequestBody PipelineDto pipeline) {
         PipelineDto updatedPipeline = pipelineService.updatePipeline(id, pipeline);
@@ -93,7 +91,6 @@ public class PipelineController {
         @ApiResponse(responseCode = "404", description = "Pipeline not found"),
         @ApiResponse(responseCode = "500", description = "Unable to delete pipeline")
     })
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePipeline(@Parameter(description = "UUID of the pipeline") @PathVariable UUID id) {
         pipelineService.deletePipeline(id);

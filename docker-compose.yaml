@@ -31,6 +31,8 @@ services:
       context: .  # Use the current directory as the build context
       dockerfile: Dockerfile  # Specify the Dockerfile (optional if named 'Dockerfile')
     image: box:0.0.1-SNAPSHOT
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
     restart: always
     ports:
       - 8111:8080
