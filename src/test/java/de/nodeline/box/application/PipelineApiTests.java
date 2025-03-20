@@ -85,7 +85,12 @@ public class PipelineApiTests extends BaseTest {
     public void addAndReadDevice() throws Exception {
         when(niFiService.createProcessGroup(any())).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
         Device dev = new Device();
-        dev.addEndpoint(new Endpoint());
+        dev.setName("device 1");
+        dev.setDescription("This is device one");
+        Endpoint ep = new Endpoint();
+        //ep.setUrl("http://localhost:8080");
+        ep.setName("local api");
+        dev.addEndpoint(ep);
         MvcResult addDeviceResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/devices")
             .contentType(MediaType.APPLICATION_JSON)
             .content(myObjectMapper.writeValueAsString(deviceService.toDto(dev))))

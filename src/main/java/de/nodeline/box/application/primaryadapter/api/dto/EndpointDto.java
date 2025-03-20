@@ -18,6 +18,9 @@ public class EndpointDto {
     @JsonProperty("id")
     @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null    
     private UUID id;
+
+    @JsonProperty("name")
+    private String name;
     
     @JsonProperty("deviceId")
     private UUID deviceId;

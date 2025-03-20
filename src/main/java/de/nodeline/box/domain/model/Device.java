@@ -1,18 +1,12 @@
 package de.nodeline.box.domain.model;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -36,6 +30,10 @@ public class Device {
     @OneToMany(mappedBy = "device", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @Valid
     private Set<Endpoint> endpoints;
+    
+    private String description;
+
+    private String name;
 
     public Device() {
         this.id = UUID.randomUUID();

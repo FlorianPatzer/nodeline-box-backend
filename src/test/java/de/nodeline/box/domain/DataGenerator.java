@@ -41,6 +41,7 @@ public class DataGenerator {
         p.addLink(sourceTran1);
         p.addLink(tran1Tran2);
         p.addLink(tran2Sink);
+        p.setName("TestPipeline");
 
         return p;
     }

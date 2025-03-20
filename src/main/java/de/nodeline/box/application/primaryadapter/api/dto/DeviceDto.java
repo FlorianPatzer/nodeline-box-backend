@@ -22,6 +22,12 @@ public class DeviceDto {
     @JsonProperty("endpoints")
     private Set<EndpointDto> endpoints;
 
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("description")
+    private String description;
+
     public DeviceDto(){
         this.endpoints = new HashSet<EndpointDto>();
     }

@@ -24,6 +24,8 @@ public class PipelineDto {
     private Set<PeerToPeerDto> links;
     @JsonProperty("status")
     private PipelineStatusDto status;
+    @JsonProperty("name")
+    private String name;
 
     public PipelineDto() {
         this.dataSinks = new HashSet<>();

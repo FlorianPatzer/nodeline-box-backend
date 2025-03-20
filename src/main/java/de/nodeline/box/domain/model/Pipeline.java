@@ -12,8 +12,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -37,6 +35,8 @@ public class Pipeline {
     @JoinColumn(name = "nodeline_box_id", referencedColumnName = "id")
     @Valid
     private NodelineBox nodelineBox;
+
+    private String name;
 
     @OneToMany(mappedBy = "pipeline", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @Setter
