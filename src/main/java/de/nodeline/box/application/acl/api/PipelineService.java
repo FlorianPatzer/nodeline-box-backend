@@ -81,6 +81,7 @@ public class PipelineService {
             conEntity.setPipeline(entity);
             entity.addLink(conEntity);
         });
+        entity.setName(dto.getName());
         return entity;
     }
 
@@ -107,6 +108,7 @@ public class PipelineService {
             transDto.setPipelineId(entity.getId());
             dto.addLinkable(transDto);
         });
+        dto.setName(entity.getName());
         return dto;
     }
 

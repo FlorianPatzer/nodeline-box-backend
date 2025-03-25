@@ -17,7 +17,7 @@ public class HttpGetRequestAttributesDto extends ProcurerAttributesDto {
     @JsonProperty("endpointId")
     private UUID endpointId;
 
-    @JsonProperty("url")
+    @JsonProperty("relativePath")
     @JsonSetter(nulls = Nulls.FAIL)    // FAIL setting if the value is null
-    private String url;
+    private String relativePath;
 }

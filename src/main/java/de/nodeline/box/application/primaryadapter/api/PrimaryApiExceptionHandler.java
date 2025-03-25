@@ -7,14 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import de.nodeline.box.application.acl.api.EndpointService;
+import de.nodeline.box.application.acl.api.RestEndpointService;
 import de.nodeline.box.application.primaryadapter.api.exceptions.EntityNotProcessableException;
 import de.nodeline.box.application.primaryadapter.api.exceptions.InvalidArgumentException;
 import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 
 @ControllerAdvice("de.nodeline.box.application.primaryadapter.api")
 public class PrimaryApiExceptionHandler {
-    private static final Logger logger = LoggerFactory.getLogger(EndpointService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestEndpointService.class);
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleGenericException(Exception ex) {

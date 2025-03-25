@@ -55,6 +55,7 @@ import de.nodeline.box.domain.model.HttpPostRequest;
 import de.nodeline.box.domain.model.JoltTransformation;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
+import de.nodeline.box.domain.model.RestEndpoint;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -87,8 +88,8 @@ public class PipelineApiTests extends BaseTest {
         Device dev = new Device();
         dev.setName("device 1");
         dev.setDescription("This is device one");
-        Endpoint ep = new Endpoint();
-        //ep.setUrl("http://localhost:8080");
+        RestEndpoint ep = new RestEndpoint();
+        ep.setBaseUrl("http://localhost:8080/api");
         ep.setName("local api");
         dev.addEndpoint(ep);
         MvcResult addDeviceResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/devices")

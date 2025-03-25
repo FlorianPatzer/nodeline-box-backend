@@ -6,14 +6,14 @@ import de.nodeline.box.application.primaryadapter.api.dto.ProcurerDto;
 import de.nodeline.box.application.primaryadapter.api.exceptions.InvalidArgumentException;
 import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.DataSourceRepositoryInterface;
-import de.nodeline.box.application.secondaryadapter.EndpointRepositoryInterface;
+import de.nodeline.box.application.secondaryadapter.RestEndpointRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PeerToPeerRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
 import de.nodeline.box.domain.model.DataSource;
-import de.nodeline.box.domain.model.Endpoint;
 import de.nodeline.box.domain.model.HttpGetRequest;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
+import de.nodeline.box.domain.model.RestEndpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class DataSourceService {
     @Autowired
     private PipelineRepositoryInterface pipelineRepository;
     @Autowired
-    private EndpointRepositoryInterface endpointRepository;
+    private RestEndpointRepositoryInterface endpointRepository;
 
 
     public DataSource toEntity(DataSourceDto dto) {
@@ -41,9 +41,9 @@ public class DataSourceService {
                 case ProcurerDto.Type.GET_REQUEST:
                     HttpGetRequest reqEntity = new HttpGetRequest();
                     reqEntity.setId(dto.getProcurer().getId());
-                    reqEntity.setUrl(((HttpGetRequestAttributesDto) dto.getProcurer().getAttributes()).getUrl());
+                    reqEntity.setRelativePath(((HttpGetRequestAttributesDto) dto.getProcurer().getAttributes()).getRelativePath());
                     if(((HttpGetRequestAttributesDto) dto.getProcurer().getAttributes()).getEndpointId() != null) {
-                        Optional<Endpoint> endpointEntity = endpointRepository.findById(((HttpGetRequestAttributesDto) dto.getProcurer().getAttributes()).getEndpointId());
+                        Optional<RestEndpoint> endpointEntity = endpointRepository.findById(((HttpGetRequestAttributesDto) dto.getProcurer().getAttributes()).getEndpointId());
                         if(endpointEntity.isPresent()) {
                             reqEntity.setEndpoint(endpointEntity.get());
                         }
@@ -89,7 +89,7 @@ public class DataSourceService {
                     if(procurer.getEndpoint() != null) {
                         procAttrDto.setEndpointId(procurer.getEndpoint().getId());
                     }
-                    procAttrDto.setUrl(procurer.getUrl());
+                    procAttrDto.setRelativePath(procurer.getRelativePath());
                     procDto.setAttributes(procAttrDto);
                     dto.setProcurer(procDto);
                     break;

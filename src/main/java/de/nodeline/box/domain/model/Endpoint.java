@@ -6,6 +6,8 @@ import org.springframework.validation.annotation.Validated;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
@@ -18,9 +20,10 @@ import lombok.Setter;
 
 @Entity
 @Data
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Validated
 @EqualsAndHashCode
-public class Endpoint {
+public abstract class Endpoint {
     @Id
     @Setter
     private UUID id;

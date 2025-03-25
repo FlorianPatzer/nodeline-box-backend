@@ -1,11 +1,13 @@
 package de.nodeline.box.application.acl.api;
 
 import de.nodeline.box.application.primaryadapter.api.dto.EndpointDto;
+import de.nodeline.box.application.primaryadapter.api.dto.RestEndpointAttributesDto;
 import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.DeviceRepositoryInterface;
-import de.nodeline.box.application.secondaryadapter.EndpointRepositoryInterface;
+import de.nodeline.box.application.secondaryadapter.RestEndpointRepositoryInterface;
 import de.nodeline.box.domain.model.Device;
 import de.nodeline.box.domain.model.Endpoint;
+import de.nodeline.box.domain.model.RestEndpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,33 +17,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
-public class EndpointService {
+public class RestEndpointService {
 
     @Autowired
-    private EndpointRepositoryInterface endpointRepository;
+    private RestEndpointRepositoryInterface endpointRepository;
     @Autowired
     private DeviceRepositoryInterface deviceRepository;
-    private static final Logger logger = LoggerFactory.getLogger(EndpointService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestEndpointService.class);
 
     public Endpoint toEntity(EndpointDto dto) {
-        Endpoint entity = new Endpoint();
+        RestEndpoint entity = new RestEndpoint();
         entity.setId(dto.getId());
         if(dto.getDeviceId() != null) {
             Optional<Device> deviceEntity = deviceRepository.findById(dto.getDeviceId());
             if(deviceEntity.isPresent()) {
                 entity.setDevice(deviceEntity.get());
-                logger.warn("Endpoint " + entity.getId() + " has a reference to a non-existent device " + dto.getDeviceId());
+            } else {
+                logger.error("Device with ID " + dto.getDeviceId() + " not found");
             }
         }
+        entity.setName(dto.getName());
+        RestEndpointAttributesDto attr = (RestEndpointAttributesDto) dto.getAttributes();
+        entity.setBaseUrl(attr.getBaseUrl());
         return entity;
     }
 
     public EndpointDto toDto(Endpoint entity) {
+        RestEndpoint restEndpoint = (RestEndpoint) entity;
         EndpointDto dto = new EndpointDto();
-        dto.setId(entity.getId());
-        if(entity.getDevice() != null) {
-            dto.setDeviceId(entity.getDevice().getId());
+        dto.setId(restEndpoint.getId());
+        if(restEndpoint.getDevice() != null) {
+            dto.setDeviceId(restEndpoint.getDevice().getId());
         }
+        RestEndpointAttributesDto attr = new RestEndpointAttributesDto();
+        attr.setBaseUrl(restEndpoint.getBaseUrl());
+        dto.setAttributes(attr);
+        dto.setName(restEndpoint.getName());
         return dto;
     }
 
@@ -50,7 +61,7 @@ public class EndpointService {
     }
 
     public EndpointDto getEndpointById(UUID id) {
-        Optional<Endpoint> endpoint = endpointRepository.findById(id);
+        Optional<RestEndpoint> endpoint = endpointRepository.findById(id);
         if(endpoint.isPresent()) {
             return this.toDto(endpoint.get());
         }
@@ -58,12 +69,12 @@ public class EndpointService {
     }
 
     public EndpointDto createEndpoint(EndpointDto endpoint) {
-        return this.toDto(endpointRepository.save(this.toEntity(endpoint)));
+        return this.toDto(endpointRepository.save((RestEndpoint) this.toEntity(endpoint)));
     }
 
     public EndpointDto updateEndpoint(UUID id, EndpointDto endpointDto) {
         if(endpointRepository.existsById(id)) {
-            Endpoint endpoint = endpointRepository.save(this.toEntity(endpointDto));
+            RestEndpoint endpoint = endpointRepository.save((RestEndpoint) this.toEntity(endpointDto));
             return this.toDto(endpoint);
         }
         throw new ResourceNotFoundException("Endpoint with ID " + id + " not found");

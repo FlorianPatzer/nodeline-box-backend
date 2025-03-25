@@ -1,7 +1,7 @@
 package de.nodeline.box.application.primaryadapter.api;
 
 
-import de.nodeline.box.application.acl.api.EndpointService;
+import de.nodeline.box.application.acl.api.RestEndpointService;
 import de.nodeline.box.application.primaryadapter.api.dto.EndpointDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class EndpointController {
 
     @Autowired
-    private EndpointService endpointService;
+    private RestEndpointService endpointService;
 
     @Operation(summary = "Get all endpoints")
     @ApiResponses(value = {

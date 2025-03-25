@@ -26,7 +26,7 @@ import de.nodeline.box.application.secondaryadapter.nifi.model.Connection;
 import de.nodeline.box.application.secondaryadapter.nifi.model.ProcessGroup;
 import de.nodeline.box.application.secondaryadapter.nifi.model.Processor;
 import de.nodeline.box.application.secondaryadapter.nifi.model.Processor.Type;
-import de.nodeline.box.application.acl.api.EndpointService;
+import de.nodeline.box.application.acl.api.RestEndpointService;
 import de.nodeline.box.application.secondaryadapter.NifiProcessGroupRepositoryInterface;
 import de.nodeline.box.domain.model.EngineFlowStatus;
 import de.nodeline.box.domain.model.Link;
@@ -43,7 +43,7 @@ public class NifiWorkflowEngineService implements WorkflowEngineService {
     private NifiProcessGroupRepositoryInterface pgRepo;
     @Autowired
     private NifiTransformationService transformationService;
-    private static final Logger logger = LoggerFactory.getLogger(EndpointService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestEndpointService.class);
 
     @Override
     public EngineResponse createFlow(Pipeline pipeline) {        

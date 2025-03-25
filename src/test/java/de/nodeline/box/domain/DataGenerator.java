@@ -1,25 +1,42 @@
 package de.nodeline.box.domain;
 
+
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;
+import de.nodeline.box.domain.model.Device;
 import de.nodeline.box.domain.model.HttpGetRequest;
 import de.nodeline.box.domain.model.HttpPostRequest;
 import de.nodeline.box.domain.model.JoltTransformation;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
+import de.nodeline.box.domain.model.RestEndpoint;
 
 public class DataGenerator {
     public static Pipeline generatePipeline(Pipeline p) {     
         JoltTransformation jTran1 = new JoltTransformation();
         JoltTransformation jTran2 = new JoltTransformation();
+        Device device1 = new Device();
+        device1.setName("device1");
+        device1.setDescription("this is device1");
+        Device device2 = new Device();
+        device2.setName("device2");
+        device2.setDescription("this is device2");
 
         DataSource source = new DataSource();
         HttpGetRequest sourceRequest = new HttpGetRequest();
-        sourceRequest.setUrl("testurl");
+        RestEndpoint sourceEndpoint = new RestEndpoint();
+        sourceEndpoint.setBaseUrl("http://localhost:8080/api1");
+        sourceEndpoint.setDevice(device1);
+        sourceRequest.setRelativePath("/test");
+        sourceRequest.setEndpoint(sourceEndpoint);
         source.setProcurer(sourceRequest);
         DataSink sink = new DataSink();
         HttpPostRequest sinkRequest = new HttpPostRequest();
-        sinkRequest.setUrl("testurl");
+        RestEndpoint sinkEndpoint = new RestEndpoint();
+        sinkEndpoint.setDevice(device2);
+        sinkEndpoint.setBaseUrl("http://localhost:8080/api2");
+        sinkRequest.setRelativePath("/test");
+        sinkRequest.setEndpoint(sinkEndpoint);
         sink.setDeliverer(sinkRequest);
 
         PeerToPeerConnection sourceTran1 = new PeerToPeerConnection();

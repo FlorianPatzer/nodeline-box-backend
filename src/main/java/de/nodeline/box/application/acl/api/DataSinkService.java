@@ -6,14 +6,15 @@ import de.nodeline.box.application.primaryadapter.api.dto.HttpPostRequestAttribu
 import de.nodeline.box.application.primaryadapter.api.exceptions.InvalidArgumentException;
 import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
 import de.nodeline.box.application.secondaryadapter.DataSinkRepositoryInterface;
-import de.nodeline.box.application.secondaryadapter.EndpointRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PeerToPeerRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.PipelineRepositoryInterface;
+import de.nodeline.box.application.secondaryadapter.RestEndpointRepositoryInterface;
 import de.nodeline.box.domain.model.DataSink;
-import de.nodeline.box.domain.model.Endpoint;
 import de.nodeline.box.domain.model.HttpPostRequest;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
+import de.nodeline.box.domain.model.RestEndpoint;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class DataSinkService {
     @Autowired
     private PipelineRepositoryInterface pipelineRepository;
     @Autowired
-    private EndpointRepositoryInterface endpointRepository;
+    private RestEndpointRepositoryInterface endpointRepository;
 
 
 
@@ -41,9 +42,9 @@ public class DataSinkService {
                 case DelivererDto.Type.POST_REQUEST:
                     HttpPostRequest reqEntity = new HttpPostRequest();
                     reqEntity.setId(dto.getDeliverer().getId());
-                    reqEntity.setUrl(((HttpPostRequestAttributesDto) dto.getDeliverer().getAttributes()).getUrl());
+                    reqEntity.setRelativePath(((HttpPostRequestAttributesDto) dto.getDeliverer().getAttributes()).getRelativePath());
                     if(((HttpPostRequestAttributesDto) dto.getDeliverer().getAttributes()).getEndpointId() != null) {
-                        Optional<Endpoint> endpointEntity = endpointRepository.findById(((HttpPostRequestAttributesDto) dto.getDeliverer().getAttributes()).getEndpointId());
+                        Optional<RestEndpoint> endpointEntity = endpointRepository.findById(((HttpPostRequestAttributesDto) dto.getDeliverer().getAttributes()).getEndpointId());
                         if(endpointEntity.isPresent()) {
                             reqEntity.setEndpoint(endpointEntity.get());
                         }
@@ -89,7 +90,7 @@ public class DataSinkService {
                     if(deliverer.getEndpoint() != null) {
                         delivererAttrDto.setEndpointId(deliverer.getEndpoint().getId());
                     }
-                    delivererAttrDto.setUrl(deliverer.getUrl());
+                    delivererAttrDto.setRelativePath(deliverer.getRelativePath());
                     delivererDto.setAttributes(delivererAttrDto);
                     dto.setDeliverer(delivererDto);
                     break;

@@ -5,10 +5,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import de.nodeline.box.application.acl.api.RestEndpointService;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.BundleDTO;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.ConfigDTO;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.ConnectableDTO;
@@ -24,10 +27,12 @@ import de.nodeline.box.domain.model.HttpPostRequest;
 import de.nodeline.box.domain.model.JoltTransformation;
 import de.nodeline.box.domain.model.Link;
 import de.nodeline.box.domain.model.Linkable;
+import de.nodeline.box.domain.model.RestEndpoint;
 
 @Service
 public class NifiTransformationService {
     static final BundleDTO STANDARD_BUNDLE = new BundleDTO("org.apache.nifi", "nifi-standard-nar", "2.0.0-M4");
+    private static final Logger logger = LoggerFactory.getLogger(RestEndpointService.class);
 
     public ProcessorDTO sinkToProcessorDTO(DataSink sink) {
         ProcessorDTO processorDTO = new ProcessorDTO();
@@ -38,7 +43,7 @@ public class NifiTransformationService {
                 //Add config
                 Map<String, String> properties = new HashMap<>();
                 properties.put("HTTP Method", "POST");
-                properties.put("HTTP URL", req.getUrl());
+                properties.put("HTTP URL", req.getRelativePath());
                 ConfigDTO processorConfig = new ConfigDTO(properties, new HashSet<>());
                 try {
                     processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.FAILURE);
@@ -65,7 +70,12 @@ public class NifiTransformationService {
                 //Add config
                 Map<String, String> properties = new HashMap<>();
                 properties.put("HTTP Method", "GET");
-                properties.put("HTTP URL", req.getUrl());
+                RestEndpoint endpoint = req.getEndpoint();
+                if (endpoint != null) {
+                    properties.put("HTTP URL", endpoint.getBaseUrl() + req.getRelativePath());
+                } else {
+                    logger.error("No endpoint found for HttpGetRequest with id: " + req.getId());
+                }
                 //Select default terminating relationships
                 ConfigDTO processorConfig = new ConfigDTO(properties, new HashSet<>());
                 try {

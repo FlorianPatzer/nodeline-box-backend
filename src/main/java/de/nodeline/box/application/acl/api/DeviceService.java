@@ -16,7 +16,7 @@ public class DeviceService {
     @Autowired
     private DeviceRepositoryInterface deviceRepository;
     @Autowired
-    private EndpointService endpointService;
+    private RestEndpointService endpointService;
 
     public Device toEntity(DeviceDto dto) {
         Device entity = new Device();

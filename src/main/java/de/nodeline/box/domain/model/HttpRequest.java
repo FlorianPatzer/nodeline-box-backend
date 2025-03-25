@@ -24,10 +24,10 @@ public abstract class HttpRequest {
     private UUID id;
     
     @OneToOne
-    private Endpoint endpoint;
+    private RestEndpoint endpoint;
 
-    @JsonProperty("url")
-    private String url;
+    @JsonProperty("relativePath")
+    private String relativePath;
     
     protected HttpRequest() {
         this.id = UUID.randomUUID();
