@@ -3,7 +3,6 @@ package de.nodeline.box.application.secondaryadapter.nifi.model;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import jakarta.persistence.Entity;

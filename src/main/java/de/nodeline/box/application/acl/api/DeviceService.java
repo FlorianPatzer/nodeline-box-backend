@@ -20,7 +20,9 @@ public class DeviceService {
 
     public Device toEntity(DeviceDto dto) {
         Device entity = new Device();
-        entity.setId(dto.getId());
+        if(dto.getId() != null) {
+            entity.setId(dto.getId());
+        }
         dto.getEndpoints().forEach(endpoint -> {
             entity.addEndpoint(endpointService.toEntity(endpoint));
         });

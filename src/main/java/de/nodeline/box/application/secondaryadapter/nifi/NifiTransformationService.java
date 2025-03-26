@@ -31,7 +31,7 @@ import de.nodeline.box.domain.model.RestEndpoint;
 
 @Service
 public class NifiTransformationService {
-    static final BundleDTO STANDARD_BUNDLE = new BundleDTO("org.apache.nifi", "nifi-standard-nar", "2.0.0-M4");
+    static final BundleDTO STANDARD_BUNDLE = new BundleDTO("org.apache.nifi", "nifi-standard-nar", "2.3.0");
     private static final Logger logger = LoggerFactory.getLogger(RestEndpointService.class);
 
     public ProcessorDTO sinkToProcessorDTO(DataSink sink) {
@@ -43,7 +43,12 @@ public class NifiTransformationService {
                 //Add config
                 Map<String, String> properties = new HashMap<>();
                 properties.put("HTTP Method", "POST");
-                properties.put("HTTP URL", req.getRelativePath());
+                RestEndpoint endpoint = req.getEndpoint();
+                if (endpoint != null) {
+                    properties.put("HTTP URL", endpoint.getBaseUrl() + req.getRelativePath());
+                } else {
+                    logger.error("No endpoint found for HttpPostRequest with id: " + req.getId());
+                }
                 ConfigDTO processorConfig = new ConfigDTO(properties, new HashSet<>());
                 try {
                     processorConfig.addRelationshipForTermination(Processor.HttpRequestRelationship.FAILURE);
@@ -96,7 +101,7 @@ public class NifiTransformationService {
         switch (linkable) {
             case JoltTransformation trans:
                 processorDTO.setType(Processor.Type.JOLT_TRANSFORMATION);
-                processorDTO.setBundle(new BundleDTO("org.apache.nifi", "nifi-jolt-nar", "2.0.0-M4"));
+                processorDTO.setBundle(new BundleDTO("org.apache.nifi", "nifi-jolt-nar", "2.3.0"));
                 //Add config
                 Map<String, String> properties = new HashMap<>();
                 properties.put("Jolt Transform", "jolt-transform-chain");

@@ -34,8 +34,10 @@ public class DataSourceService {
 
 
     public DataSource toEntity(DataSourceDto dto) {
-        DataSource entity = new DataSource();
-        entity.setId(dto.getId());
+        DataSource entity = new DataSource();        
+        if(dto.getId() != null) {
+            entity.setId(dto.getId());
+        }
         if(dto.getProcurer() != null) {
             switch (dto.getProcurer().getType()) {
                 case ProcurerDto.Type.GET_REQUEST:

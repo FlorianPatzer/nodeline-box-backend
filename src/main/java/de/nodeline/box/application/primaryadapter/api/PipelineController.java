@@ -3,7 +3,6 @@ package de.nodeline.box.application.primaryadapter.api;
 import de.nodeline.box.application.acl.api.PipelineService;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineStatusDto;
-import de.nodeline.box.domain.model.PipelineStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

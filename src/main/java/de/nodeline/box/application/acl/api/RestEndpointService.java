@@ -27,7 +27,9 @@ public class RestEndpointService {
 
     public Endpoint toEntity(EndpointDto dto) {
         RestEndpoint entity = new RestEndpoint();
-        entity.setId(dto.getId());
+        if(dto.getId() != null) {
+            entity.setId(dto.getId());
+        }
         if(dto.getDeviceId() != null) {
             Optional<Device> deviceEntity = deviceRepository.findById(dto.getDeviceId());
             if(deviceEntity.isPresent()) {

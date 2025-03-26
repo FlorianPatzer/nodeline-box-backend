@@ -36,8 +36,10 @@ public class PeerToPeerConnectionService {
     private PipelineRepositoryInterface pipelineRepository;
 
     public PeerToPeerConnection toEntity(PeerToPeerDto dto) {
-        PeerToPeerConnection entity = new PeerToPeerConnection();
-        entity.setId(dto.getId());
+        PeerToPeerConnection entity = new PeerToPeerConnection();        
+        if(dto.getId() != null) {
+            entity.setId(dto.getId());
+        }
         if(dto.getSourceLinkableRef() != null) {
             switch (dto.getSourceLinkableRef().getType()) {
                 case LinkableDto.Type.JOLT_TRANSFORMATION:

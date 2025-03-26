@@ -77,7 +77,10 @@ public class TransformationService {
             default:
                 throw new InvalidArgumentException("Type of provided transformation entity not supported: " + dto.getType());
         }
-        entity.setId(dto.getId());
+        
+        if(dto.getId() != null) {
+            entity.setId(dto.getId());
+        }
         if(dto.getPipelineId() != null) {
             Optional<Pipeline> pipEntity = pipelineRepository.findById(dto.getPipelineId());
             if(pipEntity.isPresent()) {

@@ -36,7 +36,9 @@ public class DataSinkService {
 
     public DataSink toEntity(DataSinkDto dto) {
         DataSink entity = new DataSink();
-        entity.setId(dto.getId());
+        if(dto.getId() != null) {
+            entity.setId(dto.getId());
+        }
         if(dto.getDeliverer() != null) {
             switch (dto.getDeliverer().getType()) {
                 case DelivererDto.Type.POST_REQUEST:
