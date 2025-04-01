@@ -3,6 +3,7 @@ package de.nodeline.box.application;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -32,6 +33,7 @@ import de.nodeline.box.application.primaryadapter.api.dto.DataSourceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.DeviceDto;
 import de.nodeline.box.application.primaryadapter.api.dto.LinkableDto;
 import de.nodeline.box.application.primaryadapter.api.dto.PipelineDto;
+import de.nodeline.box.application.secondaryadapter.DeviceRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.NifiProcessGroupRepositoryInterface;
 import de.nodeline.box.application.secondaryadapter.nifi.NiFiService;
 import de.nodeline.box.application.secondaryadapter.nifi.dto.ConfigDTO;
@@ -60,6 +62,9 @@ import de.nodeline.box.domain.model.RestEndpoint;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class PipelineApiTests extends BaseTest {
+    // Repositories are used to ensure preconditions for the tests   
+    @Autowired
+    private DeviceRepositoryInterface deviceRepo;
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -308,7 +313,12 @@ public class PipelineApiTests extends BaseTest {
         when(pgRepo.save(any())).thenReturn(new ProcessGroup("pgmock", UUID.randomUUID(), "1", EngineFlowStatus.STOPPED, new HashSet<>(), new HashSet<>()));
         Pipeline pip = createEmptyPipeline();
        
-        pip = DataGenerator.generatePipeline(pip); 
+        ArrayList<Device> devices = DataGenerator.generateDevices();
+        for(Device d : devices) {
+            deviceRepo.save(d);
+        }
+        deviceRepo.flush();
+        pip = DataGenerator.generatePipeline(pip, devices); 
 
         String pipelineString = myObjectMapper.writeValueAsString(pipelineService.toDto(pip));
 
