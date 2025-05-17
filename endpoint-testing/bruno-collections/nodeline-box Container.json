@@ -4,6 +4,54 @@
   "items": [
     {
       "type": "http",
+      "name": "Add Device",
+      "seq": 9,
+      "request": {
+        "url": "http://localhost:8111/api/devices",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"endpoints\": [],\n  \"name\": \"Test Gateway2\",\n  \"description\": \"This is another test gateway\"\n}\n",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "Add Endpoint",
+      "seq": 10,
+      "request": {
+        "url": "http://localhost:8111/api/endpoints",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"name\": \"Http-Endpoint2\",\n  \"deviceId\": \"9e213ab5-1b49-4a19-968f-632e6eaa4a4a\",\n  \"attributes\": {\n    \"type\": \"RestEndpointAttributesDto\",\n    \"baseUrl\": \"http://test.url/api\"\n  }\n}",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
       "name": "Create Empty Pipeline",
       "seq": 3,
       "request": {
@@ -13,7 +61,7 @@
         "params": [],
         "body": {
           "mode": "json",
-          "json": "{\"dataSources\":[],\"dataSinks\":[],\"linkables\":[],\"links\":[]}",
+          "json": "{\n  \"name\": \"new pipeline\",\n  \"description\": \"this is a new pipeline\",\n  \"dataSources\": [],\n  \"dataSinks\": [],\n  \"linkables\": [],\n  \"links\": []\n}",
           "formUrlEncoded": [],
           "multipartForm": []
         },
@@ -33,6 +81,52 @@
       "request": {
         "url": "http://localhost:8111/api/pipelines/2fa67d9a-b5f1-4963-8cfb-fa197410c013",
         "method": "DELETE",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "none",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "Get Devices",
+      "seq": 7,
+      "request": {
+        "url": "http://localhost:8111/api/devices",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "none",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "Get Endpoints",
+      "seq": 8,
+      "request": {
+        "url": "http://localhost:8111/api/endpoints",
+        "method": "GET",
         "headers": [],
         "params": [],
         "body": {
@@ -101,107 +195,13 @@
       "name": "Update Pipeline",
       "seq": 2,
       "request": {
-        "url": "http://localhost:8111/api/pipelines/b7cb7e35-bcc3-4c28-9bd3-ea6d85570c7a",
+        "url": "http://localhost:8111/api/pipelines/cfc37007-26b0-4d29-a833-9dbe3d917ed7",
         "method": "PUT",
         "headers": [],
         "params": [],
         "body": {
           "mode": "json",
-          "json": "{\n  \"id\": \"b7cb7e35-bcc3-4c28-9bd3-ea6d85570c7a\",\n  \"dataSources\": [\n    {\n      \"id\": \"c2ac0125-096a-48a7-b51c-917ae81223a4\",\n      \"pipelineId\": \"b7cb7e35-bcc3-4c28-9bd3-ea6d85570c7a\",\n      \"procurer\": {\n        \"type\": \"GET_REQUEST\",\n        \"id\": \"5af60b56-7c60-4e8b-9a81-90ed545abc52\",\n        \"attributes\": {\n          \"type\": \"HttpGetRequestAttributesDto\",\n          \"endpointId\": null,\n          \"url\": \"http://host.docker.internal:8083/dpp\"\n        }\n      },\n      \"outboundLinkIds\": []\n    }\n  ],\n  \"dataSinks\": [\n    {\n      \"id\": \"fb7c3931-a4fb-4be8-8ef0-6cf7f77e9d34\",\n      \"pipelineId\": \"b7cb7e35-bcc3-4c28-9bd3-ea6d85570c7a\",\n      \"deliverer\": {\n        \"type\": \"POST_REQUEST\",\n        \"id\": \"4e1591d0-ab00-44cc-9cd5-5995dd57a8fa\",\n        \"attributes\": {\n          \"type\": \"HttpPostRequestAttributesDto\",\n          \"endpointId\": null,\n          \"url\": \"http://host.docker.internal:8083/dpp\"\n        }\n      },\n      \"inboundLinkIds\": []\n    }\n  ],\n  \"linkables\": [\n    {\n      \"id\": \"1ba2121e-c3d2-4a1a-a433-d43c6ab7c983\",\n      \"type\": \"JOLT_TRANSFORMATION\",\n      \"inboundLinkIds\": [],\n      \"outboundLinkIds\": [],\n      \"attributes\": {\n        \"type\": \"JoltTransformationAttributesDto\",\n        \"spec\": \"[{\\n    \\\"operation\\\" : \\\"modify-overwrite-beta\\\",\\n    \\\"spec\\\": {\\n      \\\"date\\\": \\\"=substring(@(1,timestamp),0,10)\\\",\\n      \\\"time\\\": \\\"=substring(@(1,timestamp),11,19)\\\"\\n    }\\n},\\n  {\\n    \\\"operation\\\": \\\"shift\\\",\\n    \\\"spec\\\": {\\n      \\\"attributes\\\": {\\n        \\\"*\\\": {\\n          \\\"value\\\": \\\"@(1,key)\\\"\\n        }\\n      },\\n      \\\"*\\\": \\\"&\\\"\\n    }\\n }\\n]\"\n      },\n      \"pipelineId\": \"b7cb7e35-bcc3-4c28-9bd3-ea6d85570c7a\"\n    },\n    {\n      \"id\": \"fe950d78-1978-4ccf-814a-1471b8785df8\",\n      \"type\": \"JOLT_TRANSFORMATION\",\n      \"inboundLinkIds\": [],\n      \"outboundLinkIds\": [],\n      \"attributes\": {\n        \"type\": \"JoltTransformationAttributesDto\",\n        \"spec\": \"[{\\r\\n    \\\"operation\\\": \\\"modify-overwrite-beta\\\",\\r\\n    \\\"spec\\\": {\\r\\n      \\\"year\\\": \\\"=substring(@(1,date),0,4)\\\",\\r\\n      \\\"month\\\": \\\"=substring(@(1,date),5,7)\\\",\\r\\n      \\\"day\\\": \\\"=substring(@(1,date),8,10)\\\",\\r\\n      \\\"time\\\": \\\"=substring(@(1,timestamp),11,19)\\\"\\r\\n    }\\r\\n},\\r\\n  {\\r\\n    \\\"operation\\\": \\\"shift\\\",\\r\\n    \\\"spec\\\": {\\r\\n      \\\"attributes\\\": {\\r\\n        \\\"*\\\": {\\r\\n          \\\"value\\\": \\\"@(1,key)\\\"\\r\\n        }\\r\\n      },\\r\\n      \\\"*\\\": \\\"&\\\"\\r\\n    }\\r\\n }\\r\\n]\"\n      },\n      \"pipelineId\": \"b7cb7e35-bcc3-4c28-9bd3-ea6d85570c7a\"\n    }\n  ],\n  \"links\": [\n    {\n      \"id\": \"27452510-1c1c-4ed5-b4a8-99a20d5088b0\",\n      \"sourceLinkableRef\": {\n        \"id\": \"fe950d78-1978-4ccf-814a-1471b8785df8\",\n        \"type\": \"JOLT_TRANSFORMATION\"\n      },\n      \"targetLinkableRef\": null,\n      \"sinkId\": \"fb7c3931-a4fb-4be8-8ef0-6cf7f77e9d34\",\n      \"sourceId\": null,\n      \"pipelineId\": \"b7cb7e35-bcc3-4c28-9bd3-ea6d85570c7a\"\n    },\n    {\n      \"id\": \"f0e3ca9d-90bb-43bc-8c93-e879b8704e58\",\n      \"sourceLinkableRef\": null,\n      \"targetLinkableRef\": {\n        \"id\": \"1ba2121e-c3d2-4a1a-a433-d43c6ab7c983\",\n        \"type\": \"JOLT_TRANSFORMATION\"\n      },\n      \"sinkId\": null,\n      \"sourceId\": \"c2ac0125-096a-48a7-b51c-917ae81223a4\",\n      \"pipelineId\": \"b7cb7e35-bcc3-4c28-9bd3-ea6d85570c7a\"\n    },\n    {\n      \"id\": \"6da89617-7e7c-40ea-b4f7-96b397c2a674\",\n      \"sourceLinkableRef\": {\n        \"id\": \"1ba2121e-c3d2-4a1a-a433-d43c6ab7c983\",\n        \"type\": \"JOLT_TRANSFORMATION\"\n      },\n      \"targetLinkableRef\": {\n        \"id\": \"fe950d78-1978-4ccf-814a-1471b8785df8\",\n        \"type\": \"JOLT_TRANSFORMATION\"\n      },\n      \"sinkId\": null,\n      \"sourceId\": null,\n      \"pipelineId\": \"b7cb7e35-bcc3-4c28-9bd3-ea6d85570c7a\"\n    }\n  ]\n}",
-          "formUrlEncoded": [],
-          "multipartForm": []
-        },
-        "script": {},
-        "vars": {},
-        "assertions": [],
-        "tests": "",
-        "auth": {
-          "mode": "none"
-        }
-      }
-    },
-    {
-      "type": "http",
-      "name": "Get Devices",
-      "seq": 7,
-      "request": {
-        "url": "http://localhost:8111/api/devices",
-        "method": "GET",
-        "headers": [],
-        "params": [],
-        "body": {
-          "mode": "none",
-          "formUrlEncoded": [],
-          "multipartForm": []
-        },
-        "script": {},
-        "vars": {},
-        "assertions": [],
-        "tests": "",
-        "auth": {
-          "mode": "none"
-        }
-      }
-    },
-    {
-      "type": "http",
-      "name": "Get Endpoints",
-      "seq": 8,
-      "request": {
-        "url": "http://localhost:8111/api/endpoints",
-        "method": "GET",
-        "headers": [],
-        "params": [],
-        "body": {
-          "mode": "none",
-          "formUrlEncoded": [],
-          "multipartForm": []
-        },
-        "script": {},
-        "vars": {},
-        "assertions": [],
-        "tests": "",
-        "auth": {
-          "mode": "none"
-        }
-      }
-    },
-    {
-      "type": "http",
-      "name": "Add Device",
-      "seq": 9,
-      "request": {
-        "url": "http://localhost:8111/api/devices",
-        "method": "POST",
-        "headers": [],
-        "params": [],
-        "body": {
-          "mode": "json",
-          "json": "{\n  \"endpoints\": [],\n  \"name\": \"Test Gateway2\",\n  \"description\": \"This is another test gateway\"\n}\n",
-          "formUrlEncoded": [],
-          "multipartForm": []
-        },
-        "script": {},
-        "vars": {},
-        "assertions": [],
-        "tests": "",
-        "auth": {
-          "mode": "none"
-        }
-      }
-    },
-    {
-      "type": "http",
-      "name": "Add Endpoint",
-      "seq": 10,
-      "request": {
-        "url": "http://localhost:8111/api/endpoints",
-        "method": "POST",
-        "headers": [],
-        "params": [],
-        "body": {
-          "mode": "json",
-          "json": "{\n  \"name\": \"Http-Endpoint2\",\n  \"deviceId\": \"9e213ab5-1b49-4a19-968f-632e6eaa4a4a\",\n  \"attributes\": {\n    \"type\": \"RestEndpointAttributesDto\",\n    \"baseUrl\": \"http://test.url/api\"\n  }\n}",
+          "json": "{\n  \"id\": \"cfc37007-26b0-4d29-a833-9dbe3d917ed7\",\n  \"name\": \"new pipeline\",\n  \"description\": \"this is a new pipeline\",\n  \"dataSources\": [\n    {\n      \"id\": \"c2ac0125-096a-48a7-b51c-917ae81223a4\",\n      \"pipelineId\": \"cfc37007-26b0-4d29-a833-9dbe3d917ed7\",\n      \"name\": \"I am a data source\",\n      \"description\": \"This is a data source\",\n      \"procurer\": {\n        \"type\": \"GET_REQUEST\",\n        \"id\": \"5af60b56-7c60-4e8b-9a81-90ed545abc52\",\n        \"attributes\": {\n          \"type\": \"HttpGetRequestAttributesDto\",\n          \"endpointId\": \"64d8bac7-9066-4786-9760-9bfe53c2126e\",\n          \"relativePath\": \"/dpp\"\n        }\n      },\n      \"outboundLinkIds\": []\n    }\n  ],\n  \"dataSinks\": [\n    {\n      \"id\": \"fb7c3931-a4fb-4be8-8ef0-6cf7f77e9d34\",\n      \"pipelineId\": \"cfc37007-26b0-4d29-a833-9dbe3d917ed7\",\n      \"name\": \"I am a data sink\",\n      \"description\": \"This is a data sink\",\n      \"deliverer\": {\n        \"type\": \"POST_REQUEST\",\n        \"id\": \"4e1591d0-ab00-44cc-9cd5-5995dd57a8fa\",\n        \"attributes\": {\n          \"type\": \"HttpPostRequestAttributesDto\",\n          \"endpointId\": \"755f4588-8dcf-4312-b1da-80c346553e4d\",\n          \"relativePath\": \"/dpp\"\n        }\n      },\n      \"inboundLinkIds\": []\n    }\n  ],\n  \"linkables\": [\n    {\n      \"id\": \"1ba2121e-c3d2-4a1a-a433-d43c6ab7c983\",\n      \"type\": \"JOLT_TRANSFORMATION\",\n      \"name\": \"JoltTransformation1\",\n      \"description\": \"This is jolt transformation 1\",\n      \"inboundLinkIds\": [],\n      \"outboundLinkIds\": [],\n      \"attributes\": {\n        \"type\": \"JoltTransformationAttributesDto\",\n        \"spec\": \"[{\\n    \\\"operation\\\" : \\\"modify-overwrite-beta\\\",\\n    \\\"spec\\\": {\\n      \\\"date\\\": \\\"=substring(@(1,timestamp),0,10)\\\",\\n      \\\"time\\\": \\\"=substring(@(1,timestamp),11,19)\\\"\\n    }\\n},\\n  {\\n    \\\"operation\\\": \\\"shift\\\",\\n    \\\"spec\\\": {\\n      \\\"attributes\\\": {\\n        \\\"*\\\": {\\n          \\\"value\\\": \\\"@(1,key)\\\"\\n        }\\n      },\\n      \\\"*\\\": \\\"&\\\"\\n    }\\n }\\n]\"\n      },\n      \"pipelineId\": \"cfc37007-26b0-4d29-a833-9dbe3d917ed7\"\n    },\n    {\n      \"id\": \"fe950d78-1978-4ccf-814a-1471b8785df8\",\n      \"type\": \"JOLT_TRANSFORMATION\",\n      \"name\": \"JoltTransformation2\",\n      \"description\": \"This is jolt transformation 2\",\n      \"inboundLinkIds\": [],\n      \"outboundLinkIds\": [],\n      \"attributes\": {\n        \"type\": \"JoltTransformationAttributesDto\",\n        \"spec\": \"[{\\r\\n    \\\"operation\\\": \\\"modify-overwrite-beta\\\",\\r\\n    \\\"spec\\\": {\\r\\n      \\\"year\\\": \\\"=substring(@(1,date),0,4)\\\",\\r\\n      \\\"month\\\": \\\"=substring(@(1,date),5,7)\\\",\\r\\n      \\\"day\\\": \\\"=substring(@(1,date),8,10)\\\",\\r\\n      \\\"time\\\": \\\"=substring(@(1,timestamp),11,19)\\\"\\r\\n    }\\r\\n},\\r\\n  {\\r\\n    \\\"operation\\\": \\\"shift\\\",\\r\\n    \\\"spec\\\": {\\r\\n      \\\"attributes\\\": {\\r\\n        \\\"*\\\": {\\r\\n          \\\"value\\\": \\\"@(1,key)\\\"\\r\\n        }\\r\\n      },\\r\\n      \\\"*\\\": \\\"&\\\"\\r\\n    }\\r\\n }\\r\\n]\"\n      },\n      \"pipelineId\": \"cfc37007-26b0-4d29-a833-9dbe3d917ed7\"\n    }\n  ],\n  \"links\": [\n    {\n      \"id\": \"27452510-1c1c-4ed5-b4a8-99a20d5088b0\",\n      \"sourceLinkableRef\": {\n        \"id\": \"fe950d78-1978-4ccf-814a-1471b8785df8\",\n        \"type\": \"JOLT_TRANSFORMATION\"\n      },\n      \"targetLinkableRef\": null,\n      \"sinkId\": \"fb7c3931-a4fb-4be8-8ef0-6cf7f77e9d34\",\n      \"sourceId\": null,\n      \"pipelineId\": \"cfc37007-26b0-4d29-a833-9dbe3d917ed7\"\n    },\n    {\n      \"id\": \"f0e3ca9d-90bb-43bc-8c93-e879b8704e58\",\n      \"sourceLinkableRef\": null,\n      \"targetLinkableRef\": {\n        \"id\": \"1ba2121e-c3d2-4a1a-a433-d43c6ab7c983\",\n        \"type\": \"JOLT_TRANSFORMATION\"\n      },\n      \"sinkId\": null,\n      \"sourceId\": \"c2ac0125-096a-48a7-b51c-917ae81223a4\",\n      \"pipelineId\": \"cfc37007-26b0-4d29-a833-9dbe3d917ed7\"\n    },\n    {\n      \"id\": \"6da89617-7e7c-40ea-b4f7-96b397c2a674\",\n      \"sourceLinkableRef\": {\n        \"id\": \"1ba2121e-c3d2-4a1a-a433-d43c6ab7c983\",\n        \"type\": \"JOLT_TRANSFORMATION\"\n      },\n      \"targetLinkableRef\": {\n        \"id\": \"fe950d78-1978-4ccf-814a-1471b8785df8\",\n        \"type\": \"JOLT_TRANSFORMATION\"\n      },\n      \"sinkId\": null,\n      \"sourceId\": null,\n      \"pipelineId\": \"cfc37007-26b0-4d29-a833-9dbe3d917ed7\"\n    }\n  ]\n}",
           "formUrlEncoded": [],
           "multipartForm": []
         },
