@@ -81,7 +81,12 @@ public class PipelineService {
             conEntity.setPipeline(entity);
             entity.addLink(conEntity);
         });
-        entity.setName(dto.getName());
+        if(dto.getName() != null) {
+            entity.setName(dto.getName());
+        }
+        if(dto.getDescription() != null) {
+            entity.setDescription(dto.getDescription());
+        }
         return entity;
     }
 
@@ -108,7 +113,13 @@ public class PipelineService {
             transDto.setPipelineId(entity.getId());
             dto.addLinkable(transDto);
         });
-        dto.setName(entity.getName());
+        if(entity.getName() != null) {
+            dto.setName(entity.getName());
+        }
+        if(entity.getDescription() != null) {
+            dto.setDescription(entity.getDescription());
+        }
+        
         return dto;
     }
 
@@ -154,11 +165,12 @@ public class PipelineService {
         return this.toDto(pipeline.get());
     }
 
-    public PipelineDto createPipeline(PipelineDto pipeline) {
-        if(pipeline.getId() != null) {
+    public PipelineDto createPipeline(PipelineDto pipelineDto) {
+        if(pipelineDto.getId() != null) {
             throw new InvalidArgumentException("ID must not be set for new Pipelines");
         }
-        return this.toDto(pipelineRepository.save(new Pipeline()));
+        Pipeline inputPipeline = this.toEntity(pipelineDto);
+        return this.toDto(pipelineRepository.save(inputPipeline));
         /* 
         Pipeline pipelineEntity = this.toEntity(pipeline);
         EngineResponse response = workflowEngineService.createFlow(pipelineEntity);

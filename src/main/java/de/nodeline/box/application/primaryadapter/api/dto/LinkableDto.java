@@ -27,6 +27,10 @@ public class LinkableDto {
     private LinkableAttributesDto attributes;    
     @JsonProperty("pipelineId")
     private UUID pipelineId;
+    @JsonProperty("name")
+    private String name;
+    @JsonProperty("description")
+    private String description;
 
     public LinkableDto() {
         this.inboundLinkIds = new HashSet<>();

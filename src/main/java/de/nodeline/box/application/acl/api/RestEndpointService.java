@@ -38,7 +38,12 @@ public class RestEndpointService {
                 logger.error("Device with ID " + dto.getDeviceId() + " not found");
             }
         }
-        entity.setName(dto.getName());
+        if(dto.getName() != null) {
+            entity.setName(dto.getName());
+        }
+        if(dto.getDescription() != null) {
+            entity.setDescription(dto.getDescription());
+        }
         RestEndpointAttributesDto attr = (RestEndpointAttributesDto) dto.getAttributes();
         entity.setBaseUrl(attr.getBaseUrl());
         return entity;
@@ -54,7 +59,12 @@ public class RestEndpointService {
         RestEndpointAttributesDto attr = new RestEndpointAttributesDto();
         attr.setBaseUrl(restEndpoint.getBaseUrl());
         dto.setAttributes(attr);
-        dto.setName(restEndpoint.getName());
+        if(entity.getName() != null) {
+            dto.setName(entity.getName());
+        }
+        if(entity.getDescription() != null) {
+            dto.setDescription(entity.getDescription());
+        }
         return dto;
     }
 

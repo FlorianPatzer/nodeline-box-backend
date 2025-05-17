@@ -39,6 +39,10 @@ public class DataSink {
     @Setter
     private UUID id;
 
+    private String name;
+    
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "pipeline_id", referencedColumnName = "id")
     @Valid

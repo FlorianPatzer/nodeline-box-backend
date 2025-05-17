@@ -26,6 +26,8 @@ public class PipelineDto {
     private PipelineStatusDto status;
     @JsonProperty("name")
     private String name;
+    @JsonProperty("description")
+    private String description;
 
     public PipelineDto() {
         this.dataSinks = new HashSet<>();

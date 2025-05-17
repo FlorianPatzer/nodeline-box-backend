@@ -26,6 +26,12 @@ public class DeviceService {
         dto.getEndpoints().forEach(endpoint -> {
             entity.addEndpoint(endpointService.toEntity(endpoint));
         });
+        if(dto.getName() != null) {
+            entity.setName(dto.getName());
+        }
+        if(dto.getDescription() != null) {
+            entity.setDescription(dto.getDescription());
+        }
         return entity;
     }
 
@@ -35,6 +41,12 @@ public class DeviceService {
         entity.getEndpoints().forEach(endpoint -> {
             dto.addEndpoint(endpointService.toDto(endpoint));
         });
+        if(entity.getName() != null) {
+            dto.setName(entity.getName());
+        }
+        if(entity.getDescription() != null) {
+            dto.setDescription(entity.getDescription());
+        }
         return dto;
     }
 

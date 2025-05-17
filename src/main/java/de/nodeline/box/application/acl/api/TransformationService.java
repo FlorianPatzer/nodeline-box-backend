@@ -62,6 +62,9 @@ public class TransformationService {
         if(entity.getPipeline() != null) {
             dto.setPipelineId(entity.getPipeline().getId());
         }
+
+        dto.setName(entity.getName());
+        dto.setDescription(entity.getDescription());
                 
         return dto;
     }
@@ -103,6 +106,9 @@ public class TransformationService {
                 entity.addOut(conEntity.get());
             }
         });
+
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
         return entity;
     }
 

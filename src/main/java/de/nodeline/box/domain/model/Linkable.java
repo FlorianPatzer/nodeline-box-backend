@@ -26,6 +26,9 @@ public abstract class Linkable {
     @Id
     protected UUID id;
 
+    private String name;
+    private String description;
+
     @OneToMany(mappedBy = "in", cascade = {CascadeType.ALL}, orphanRemoval = true)
     protected Set<Link> out;
     

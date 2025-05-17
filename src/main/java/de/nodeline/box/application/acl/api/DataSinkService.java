@@ -76,6 +76,14 @@ public class DataSinkService {
         } else {
             throw new InvalidArgumentException("Pipeline id required for data sink " + dto.getId());
         }
+
+        if(dto.getName() != null) {
+            entity.setName(dto.getName());
+        }
+        if(dto.getDescription() != null) {
+            entity.setDescription(dto.getDescription());
+        }
+
         return entity;
     }
 
@@ -111,6 +119,13 @@ public class DataSinkService {
         if(entity.getPipeline() != null) {
             dto.setPipelineId(entity.getPipeline().getId());
         }
+        if(entity.getName() != null) {
+            dto.setName(entity.getName());
+        }
+        if(entity.getDescription() != null) {
+            dto.setDescription(entity.getDescription());
+        }
+
         return dto;
     }
 

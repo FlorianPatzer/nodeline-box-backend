@@ -30,6 +30,8 @@ public abstract class Endpoint {
 
     private String name;
 
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "device_id", referencedColumnName = "id")
     private Device device;

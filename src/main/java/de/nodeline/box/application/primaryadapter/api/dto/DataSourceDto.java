@@ -22,6 +22,10 @@ public class DataSourceDto {
     private ProcurerDto procurer;
     @JsonProperty("outboundLinkIds")
     private Set<UUID> outboundLinkIds;
+    @JsonProperty("name")
+    private String name;
+    @JsonProperty("description")
+    private String description;
 
     public DataSourceDto() {
         outboundLinkIds = new HashSet<>();

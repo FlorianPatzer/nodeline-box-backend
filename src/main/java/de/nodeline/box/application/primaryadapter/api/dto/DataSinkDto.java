@@ -23,6 +23,10 @@ public class DataSinkDto {
     private DelivererDto deliverer;
     @JsonProperty("inboundLinkIds")
     private Set<UUID> inboundLinkIds;
+    @JsonProperty("name")
+    private String name;
+    @JsonProperty("description")
+    private String description;
 
     public DataSinkDto() {
         inboundLinkIds = new HashSet<>();

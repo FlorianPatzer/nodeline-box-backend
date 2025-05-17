@@ -21,6 +21,9 @@ public class EndpointDto {
 
     @JsonProperty("name")
     private String name;
+
+    @JsonProperty("description")
+    private String description;
     
     @JsonProperty("deviceId")
     private UUID deviceId;

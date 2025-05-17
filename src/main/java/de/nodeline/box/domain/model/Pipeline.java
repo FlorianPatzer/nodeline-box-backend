@@ -38,6 +38,8 @@ public class Pipeline {
 
     private String name;
 
+    private String description;
+
     @OneToMany(mappedBy = "pipeline", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @Setter
     @Valid
