@@ -19,10 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 
 
+## [0.0.1] - 2025-05-17
+
+This is a version working with nodeline-demo1 0.1.0.
+
 ## [0.0.0] - 2025-04-01
 
 This is the first version of the nodeline box
 
 
 [unreleased]:https://github.com/FlorianPatzer/nodeline-box-backend/tree/dev
+[0.0.1]: https://github.com/FlorianPatzer/nodeline-box-backend/releases/tag/0.0.1
 [0.0.0]: https://github.com/FlorianPatzer/nodeline-box-backend/releases/tag/0.0.0
