@@ -1,5 +1,6 @@
 package de.nodeline.box.application.acl.api;
 
+import de.nodeline.box.application.primaryadapter.api.dto.CredentialsDto;
 import de.nodeline.box.application.primaryadapter.api.dto.EndpointDto;
 import de.nodeline.box.application.primaryadapter.api.dto.RestEndpointAttributesDto;
 import de.nodeline.box.application.primaryadapter.api.exceptions.ResourceNotFoundException;
@@ -23,7 +24,13 @@ public class RestEndpointService {
     private RestEndpointRepositoryInterface endpointRepository;
     @Autowired
     private DeviceRepositoryInterface deviceRepository;
+    @Autowired
+    private CredentialsService credentialsService;
     private static final Logger logger = LoggerFactory.getLogger(RestEndpointService.class);
+
+    RestEndpointService(CredentialsService credentialsService) {
+        this.credentialsService = credentialsService;
+    }
 
     public Endpoint toEntity(EndpointDto dto) {
         RestEndpoint entity = new RestEndpoint();
@@ -46,6 +53,9 @@ public class RestEndpointService {
         }
         RestEndpointAttributesDto attr = (RestEndpointAttributesDto) dto.getAttributes();
         entity.setBaseUrl(attr.getBaseUrl());
+        dto.getCredentials().forEach(cred -> {
+            entity.addCredentials(credentialsService.toEntity(cred));
+        });
         return entity;
     }
 
@@ -64,6 +74,13 @@ public class RestEndpointService {
         }
         if(entity.getDescription() != null) {
             dto.setDescription(entity.getDescription());
+        }
+        if(entity.getCredentials() != null) {
+            Set<CredentialsDto> credentialsDtos = new HashSet<>();
+            entity.getCredentials().forEach(cred -> {
+                credentialsDtos.add(credentialsService.toDto(cred));
+            });
+            dto.setCredentials(credentialsDtos);
         }
         return dto;
     }

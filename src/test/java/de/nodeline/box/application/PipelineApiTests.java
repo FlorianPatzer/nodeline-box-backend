@@ -47,6 +47,8 @@ import de.nodeline.box.application.secondaryadapter.nifi.dto.RevisionDTO;
 import de.nodeline.box.application.secondaryadapter.nifi.model.ProcessGroup;
 import de.nodeline.box.application.secondaryadapter.nifi.model.Processor;
 import de.nodeline.box.domain.DataGenerator;
+import de.nodeline.box.domain.model.BearerTokenCredentials;
+import de.nodeline.box.domain.model.Credentials;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;
 import de.nodeline.box.domain.model.Device;
@@ -58,6 +60,7 @@ import de.nodeline.box.domain.model.JoltTransformation;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
 import de.nodeline.box.domain.model.RestEndpoint;
+import de.nodeline.box.domain.model.record.BearerToken;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -96,6 +99,12 @@ public class PipelineApiTests extends BaseTest {
         RestEndpoint ep = new RestEndpoint();
         ep.setBaseUrl("http://localhost:8080/api");
         ep.setName("local api");
+        ep.setDescription("this is the local api");
+        BearerTokenCredentials cred = new BearerTokenCredentials();
+        cred.setName("test credentials");
+        cred.setDescription("test credentials");
+        cred.setToken(new BearerToken("testtoken"));
+        ep.addCredentials(cred);
         dev.addEndpoint(ep);
         MvcResult addDeviceResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/devices")
             .contentType(MediaType.APPLICATION_JSON)

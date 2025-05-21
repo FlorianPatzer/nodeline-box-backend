@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class CreadentialsDto {
+public class CredentialsDto {
     @JsonProperty("id")
     private UUID id;
     @JsonProperty("name")

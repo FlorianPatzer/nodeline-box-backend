@@ -3,6 +3,7 @@ package de.nodeline.box.domain;
 
 import java.util.ArrayList;
 
+import de.nodeline.box.domain.model.BearerTokenCredentials;
 import de.nodeline.box.domain.model.DataSink;
 import de.nodeline.box.domain.model.DataSource;
 import de.nodeline.box.domain.model.Device;
@@ -13,6 +14,7 @@ import de.nodeline.box.domain.model.JoltTransformation;
 import de.nodeline.box.domain.model.PeerToPeerConnection;
 import de.nodeline.box.domain.model.Pipeline;
 import de.nodeline.box.domain.model.RestEndpoint;
+import de.nodeline.box.domain.model.record.BearerToken;
 
 public class DataGenerator {
     public static Pipeline generatePipeline(Pipeline p, ArrayList<Device> devices) {     
@@ -57,12 +59,20 @@ public class DataGenerator {
     }
 
     public static ArrayList<Device> generateDevices() {
+        BearerTokenCredentials cred = new BearerTokenCredentials();
+        cred.setName("test credentials");
+        cred.setDescription("test credentials");
+        cred.setToken(new BearerToken("testtoken"));
+
         ArrayList<Device> devices = new ArrayList<>();
         Device device1 = new Device();
         device1.setName("device1");
         device1.setDescription("this is device1");
         RestEndpoint endpoint1 = new RestEndpoint();
         endpoint1.setBaseUrl("http://localhost:8080/api1");
+        endpoint1.setName("endpoint1");
+        endpoint1.setDescription("this is endpoint1");
+        endpoint1.addCredentials(cred);
         device1.addEndpoint(endpoint1);
         
         Device device2 = new Device();
@@ -70,6 +80,9 @@ public class DataGenerator {
         device2.setDescription("this is device2");
         RestEndpoint endpoint2 = new RestEndpoint();
         endpoint1.setBaseUrl("http://localhost:8080/api2");
+        endpoint1.setName("endpoint2");
+        endpoint1.setDescription("this is endpoint2");
+        endpoint2.addCredentials(cred);
         device2.addEndpoint(endpoint2);
 
 

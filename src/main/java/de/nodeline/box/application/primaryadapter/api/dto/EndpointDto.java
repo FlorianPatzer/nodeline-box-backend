@@ -1,5 +1,6 @@
 package de.nodeline.box.application.primaryadapter.api.dto;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,7 +28,10 @@ public class EndpointDto {
     
     @JsonProperty("deviceId")
     private UUID deviceId;
+    
+    @JsonProperty("credentials")
+    private Set<CredentialsDto> credentials;
 
     @JsonProperty("attributes")    
-    private EndpointAttributesDto attributes;   
+    private EndpointAttributesDto attributes;
 }

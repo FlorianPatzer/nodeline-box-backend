@@ -1,5 +1,6 @@
 package de.nodeline.box.domain.model;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -48,5 +49,11 @@ public abstract class Endpoint {
 
     public Endpoint() {
         this.id = UUID.randomUUID();
+        this.credentials = new HashSet<>();
+    }
+
+    public void addCredentials(Credentials credentials) {
+        credentials.setEndpoint(this);
+        this.credentials.add(credentials);
     }
 }
